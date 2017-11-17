@@ -1,11 +1,14 @@
 from collections import namedtuple, OrderedDict
-from datetime import datetime
+from datetime import datetime, timedelta
 from config import JuiceConfig
 import simplejson as json
 import os
 
+from timeline_processor.sensor_generator import SensorGenerator
+
+
 class TimelineProcessor:
-    def __init__(self, juice_config, instruments = None):
+    def __init__(self, juice_config, instruments = None, observation_lifetime_s = 600):
         """
 
         :type juice_config: JuiceConfig
@@ -13,16 +16,24 @@ class TimelineProcessor:
         self.juice_config = juice_config
         self.parsed_timeline = None
         self.instruments = instruments if instruments else \
-            self.juice_config.get_boresights().keys()
+            self.juice_config.get_instruments()
+        self.set_observation_lifetime_seconds(observation_lifetime_s)
+        self.sensor_generator = SensorGenerator(juice_config)
 
     def process_scenario(self, timeline_file_path, require_json_path, output_folder_path):
         with open(timeline_file_path) as f:
             parsed_lines = self._parse_experiment_modes(f)
-        observation_times = self._process_parsed_lines(parsed_lines)
-        self._generate_observation_files(observation_times, output_folder_path, require_json_path)
+        observations = self._process_parsed_lines_into_observations(parsed_lines)
+        self._generate_observation_files(observations, output_folder_path, require_json_path)
+        self.sensor_generator.generate_sensors(observations, output_folder_path)
 
     def set_instruments(self, instrument_list):
         self.instruments = instrument_list
+
+    def set_observation_lifetime_seconds(self, lifetime):
+        if lifetime<0:
+            raise ValueError("Negative observation lifetime.")
+        self.observation_lifetime_seconds = lifetime
 
     def _parse_experiment_modes(self, f):
         # Find line that starts with "Experiment modes:", then skip 3 lines,
@@ -45,66 +56,75 @@ class TimelineProcessor:
             parsed_lines.append( Entry(utc_timestamp, instrument_name, mode) )
         return parsed_lines
 
-    def _process_parsed_lines(self, parsed_lines):
-        on_states = self.juice_config.get_on_states()
-        print on_states
-        observation_times = OrderedDict()
-        for name in self.instruments:
-            observation_times[name] = []
-            entries = [e for e in parsed_lines if e.instrument_name==name]
-            is_on = False
+    def _process_parsed_lines_into_observations(self, parsed_lines):
+        mode_sensors = self.juice_config.get_mode_sensors()
+        observations = OrderedDict()
+        for instrument in self.instruments:
+            observations[instrument] = OrderedDict()
+            entries = [e for e in parsed_lines if e.instrument_name == instrument]
+            current_sensor = None
             for e in entries:
-                if not is_on:
-                    if e.mode in on_states:
+                if current_sensor is None:
+                    if e.mode in mode_sensors:
                         start_time = e.utc_timestamp
-                        is_on = True
+                        current_sensor = mode_sensors[e.mode]
+                    else:
+                        continue
                 else:
-                    if not e.mode in on_states:
-                        end_time = e.utc_timestamp
-                        observation_times[name].append( (start_time, end_time) )
-                        is_on = False
-        return observation_times
+                    end_time = e.utc_timestamp
+                    if current_sensor not in observations[instrument]:
+                        observations[instrument][current_sensor] = []
+                    observations[instrument][current_sensor].append( (start_time, end_time) )
+                    if e.mode in mode_sensors:
+                        current_sensor = mode_sensors[e.mode]
+                        start_time = e.utc_timestamp
+                    else:
+                        current_sensor = None
+            # if no sensor got entered for an instrument, delete the entry
+            if not observations[instrument]:
+                del observations[instrument]
+        print observations
+        return observations
 
-    def _generate_observation_files(self, observation_times, output_folder_path, require_json_path):
+    def _generate_observation_files(self, observations, output_folder_path, require_json_path):
         with open(require_json_path) as json_file:
             require_json = json.load(json_file)
-
-        for name, entries in observation_times.iteritems():
-            file_name = "JUICE_GEN_OBS_{}.json".format(name)
-            if not entries:
-                continue
-            observation = self.juice_config.get_template_observation()
-            edit_entry = observation["items"][0]
-            edit_entry["name"] = "JUICE_{}_OBS".format(name)
-            edit_entry["startTime"] = self._ftime(entries[0][0])
-            edit_entry["endTime"] = self._ftime(entries[-1][1])
-            for entry in entries:
-                d = OrderedDict()
-                d["startTime"] = self._ftime(entry[0])
-                d["endTime"] = self._ftime(entry[1])
-                d["obsRate"] = 0
-                edit_entry["geometry"]["groups"].append(d)
-                edit_entry["geometry"]["footprintColor"] = self.juice_config.get_sensor_colors()[name]
-                edit_entry["geometry"]["sensor"] = self.juice_config.get_boresights()[name]
-            with open(os.path.abspath(os.path.join(output_folder_path,
-                    file_name)), 'w+') as outfile:
-                json.dump(observation, outfile, indent=2)
-
-            # check if the required sensor JSON is included and if not, add it
-            sensor_json_path = "../sensors/sensor_JUICE_{}_CALLISTO.json".format(name)
-            if not sensor_json_path in require_json["require"]:
-                require_json["require"].append(sensor_json_path)
-            # now we need to add the observation file into the require json
-            require_json["require"].append("../{}/{}".format(
-                os.path.basename(os.path.abspath(output_folder_path)), file_name))
-
+        os.makedirs(os.path.abspath(os.path.join(output_folder_path,'observations')))
+        for instrument_name, sensor_dict in observations.iteritems():
+            for sensor_name, observation_list in sensor_dict.iteritems():
+                # sensor JSON needs to be added first
+                sensor_json_path = "sensors/sensor_{}_CALLISTO.json".format(sensor_name)
+                if not sensor_json_path in require_json["require"]:
+                    require_json["require"].append(sensor_json_path)
+                for idx, times in enumerate(observation_list):
+                    file_name = "JUICE_GEN_OBS_{}_{}.json".format(sensor_name, idx)
+                    observation = self.juice_config.get_template_observation()
+                    edit_entry = observation["items"][0]
+                    edit_entry["name"] = file_name[:-5]
+                    edit_entry["startTime"] = self._ftime(times[0])
+                    edit_entry["endTime"] = self._ftime(self._delay_observation_end_time(times[1]))
+                    d = OrderedDict()
+                    d["startTime"] = self._ftime(times[0])
+                    d["endTime"] = self._ftime(times[1])
+                    d["obsRate"] = 0
+                    edit_entry["geometry"]["groups"].append(d)
+                    edit_entry["geometry"]["footprintColor"] = self.juice_config.get_sensor_colors()[instrument_name]
+                    edit_entry["geometry"]["sensor"] = sensor_name
+                    with open(os.path.abspath(os.path.join(output_folder_path,'observations',
+                            file_name)), 'w+') as outfile:
+                        json.dump(observation, outfile, indent=2)
+                    # we need to add the observation file into the require json
+                    require_json["require"].append("observations/{}".format(file_name))
 
         with open(require_json_path, 'w') as json_file:
             json.dump(require_json, json_file, indent=2)
-
+        return
 
     def _ftime(self, time):
         return time.strftime("%Y-%m-%d %H:%M:%S.000 UTC")
+
+    def _delay_observation_end_time(self, time):
+        return time + timedelta(seconds=self.observation_lifetime_seconds)
 
 if __name__=='__main__':
     print __file__

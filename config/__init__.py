@@ -65,20 +65,14 @@ class JuiceConfig(ConfigParser.ConfigParser):
             return "[]"
         return self.get(section, option)
 
-    def get_on_states(self):
-        return json.loads(self.get_list_property('itl', 'on_states'))
-
-    def get_off_states(self):
-        return json.loads(self.get_list_property('itl', 'off_states'))
-
     def get_checked_instruments(self):
         return self.get_property('ui','checked_instruments').split(',')
 
     def set_checked_instruments(self, instrument_list):
         self.set_property('ui','checked_instruments',",".join(instrument_list))
 
-    def get_boresights(self):
-        return json.loads(self.get_object_property('itl', 'boresights'))
+    def get_mode_sensors(self):
+        return json.loads(self.get_object_property('itl', 'mode_sensors'))
 
     def get_target(self):
         return self.get_property('itl', 'target')
@@ -90,7 +84,7 @@ class JuiceConfig(ConfigParser.ConfigParser):
         return json.loads(self.get_object_property('ui', 'sensor_colors'))
 
     def get_instruments(self):
-        return json.loads(self.get_list_property('ui', 'instruments'))
+        return json.loads(self.get_list_property('itl', 'instruments'))
 
     def get_targets(self):
         return json.loads(self.get_list_property('ui', 'targets'))

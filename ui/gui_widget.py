@@ -28,7 +28,7 @@ class MappsConverter(QWidget):
 
     def _populate_instrument_table(self):
         table = self.form.instrumentTable
-        instrument_list = self.juice_config.get_boresights().keys()
+        instrument_list = self.juice_config.get_instruments()
         checked_instruments = self.juice_config.get_checked_instruments()
         self.instrument_checkboxes = OrderedDict()
         for idx, name in enumerate(instrument_list):
@@ -74,6 +74,10 @@ class MappsConverter(QWidget):
             self.form.le_Scenario.setText(file_name)
              
     def generate(self):
+
+        progress = QProgressDialog("Processing", "Abort", 0, 3, self)
+        progress.setWindowModality(Qt.WindowModal)
+
         self._parse_instrument_checkboxes()
         ck_file_name = 'mapps_output.ck'
         attitude_file = self.form.le_MappsAttitude.text()
@@ -85,11 +89,23 @@ class MappsConverter(QWidget):
         os.makedirs(new_folder_path)
         output_ck_path = os.path.abspath(os.path.join(new_folder_path,ck_file_name))
         print output_ck_path
+        progress.setValue(1)
+        progress.forceShow()
+        if progress.wasCanceled():
+            return
         self.attitude_converter.convert(attitude_file, output_ck_path)
-
+        progress.setValue(2)
+        if progress.wasCanceled():
+            return
         new_scenario_file_path = self.scenario_processor.process_scenario(
             scenario_file, new_folder_name, ck_file_name)
 
         self.timeline_processor.process_scenario(timeline_file,
                                 new_scenario_file_path, new_folder_path)
+        progress.destroy()
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText('Scenario created')
+        msg.exec_()
+        sys.exit(0)
         return
