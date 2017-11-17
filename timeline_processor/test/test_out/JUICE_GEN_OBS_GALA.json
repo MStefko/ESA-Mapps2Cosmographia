@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "name": "Cosmographia JUICE Example",
+  "items": [
+    {
+      "class": "observation",
+      "center": "Callisto",
+      "trajectoryFrame": {
+        "type": "BodyFixed",
+        "body": "Callisto"
+      },
+      "bodyFrame": {
+        "type": "BodyFixed",
+        "body": "Callisto"
+      },
+      "geometry": {
+        "type": "Observations",
+        "groups": [
+          {
+            "startTime": "2031-04-25 22:29:47.000 UTC",
+            "endTime": "2031-04-25 22:51:47.000 UTC",
+            "obsRate": 0
+          }
+        ],
+        "footprintColor": [
+          0,
+          0,
+          1
+        ],
+        "footprintOpacity": 0.5,
+        "showResWithColor": false,
+        "alongTrackDivisions": 500,
+        "shadowVolumeScaleFactor": 1.75,
+        "fillInObservations": false
+      },
+      "name": "JUICE_GALA_OBS",
+      "startTime": "2031-04-25 22:29:47.000 UTC",
+      "endTime": "2031-04-25 22:51:47.000 UTC"
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+KPL/SCLK
+
+Bepi-Colombo MPO Spacecraft SCLK File -- TEST DATA -- FICTIONAL
+===========================================================================
+ 
+   This file is a SPICE spacecraft clock (SCLK) kernel containing
+   information required for the BepiColombo Mercury Planetary Orbiter 
+   (MPO) spacecraft on-board clock to UTC conversion.
+   
+   This file contains the data necessary for converting from ET to
+   ticks for the FICTIONAL MPO spacecraft clock (clock ID code 121)
+   
+   This is intended for study purposes or for those situations in which
+   a clock is not available for the structure whose orientation will be
+   modelled by a C-kernel.
+ 
+ 
+Production/History of this SCLK file
+--------------------------------------------------------
+ 
+   Version 0.1 -- July 05, 2016 -- Marc Costa Sitja, ESAC/ESA
+   
+      Updated the file text. 
+  
+
+   Version 0.0 -- December 22, 2014 -- Jonathan McAuliffe, ESAC/ESA
+   
+      Initial release.
+
+
+Production/History of this SCLK file
+--------------------------------------------------------
+
+   This file has been manually created by Jonathan McAuliffe (ESAC/ESA)
+   and contains FICTIONAL DATA. It is intended ONLY for study purposes. 
+   NO DATA ANALYSIS SHALL BE PERFORMED BASED ON THIS FILE.  
+   
+   This SCLK kernel is intended to be used with test CK files with
+   structure IDs listed below on board the spacecraft -121 (MPO):
+   
+              Name              NAIF ID
+      ======================   =========
+       MPO_SPACECRAFT           -121000  
+       MPO_SA                   -121011
+       
+       MPO_HGA                  -121020
+       MPO_MGA                  -121021
+       MPO_LGA                  -121022
+
+       MPO_MAG_BOOM             -121031
+
+
+Usage
+--------------------------------------------------------
+ 
+   This file is used by the SPICE system as follows: programs that make
+   use of this frame kernel must "load" the kernel normally during 
+   program initialization. Loading the kernel associates the data items 
+   with their names in a data structure called the "kernel pool". The 
+   routine that loads a kernel into the pool is shown below:
+                                                                               
+      FORTRAN: (SPICELIB)
+
+         CALL FURNSH ( frame_kernel_name )
+
+      C: (CSPICE)
+
+         furnsh_c ( frame_kernel_name );
+
+      IDL: (ICY)
+
+         cspice_furnsh, frame_kernel_name
+         
+      MATLAB: (MICE)
+      
+         cspice_furnsh ( 'frame_kernel_name' )
+
+      PYTHON: (SPICEYPY)*
+
+         furnsh( frame_kernel_name )
+
+   This file must be loaded into the user's program in order to use the
+   SPICE SCLK family of subroutines to convert JUICE FICTIONAL spacecraft
+   on-board clock to ET and vice versa.
+   
+   This file was created and may be updated with a text editor or word
+   processor.
+ 
+   * SPICEPY is a non-official, community developed Python wrapper for the
+    NAIF SPICE toolkit. Its development is managed on Github.
+    It is available at: https://github.com/AndrewAnnex/SpiceyPy
+
+ 
+SCLK Format
+--------------------------------------------------------
+
+     The on-board clock, the conversion for which is provided by this
+     SCLK file, consists of two fields:
+
+          P/SSSSSSSSSS:FFFFF
+
+     where:
+
+          P/         -- optional partition identifier
+
+          SSSSSSSSSS -- count of on-board seconds (32 bits)
+
+          FFFFF      -- count of fractions of a second (16 bits)
+                         
+
+References
+--------------------------------------------------------
+ 
+         1.   SCLK Required Reading Document
+ 
+         2.   MAKCLK User's Guide Document
+ 
+         3.   SFOC SCLKvSCET SIS Document
+
+         4.   BepiColombo Space-to-Ground ICD, BC-ASD-IF-00019, volume 2
+
+         5.   BepiColombo OBC HW/SW ICD, BC-TAM-IF-00002
+
+ 
+Kernel DATA
+--------------------------------------------------------
+
+   This SCLK file is constructed so that the valid SCLK strings are
+   simply the number of TDB seconds that have passed since the Ephemeris
+   epoch 2016-JULY-12-00:01:08.184. Thus 1/288929292.8201 simply
+   represents the epoch that occurs 288929292.12514 TDB seconds past the
+   ET epoch 2016-JULY-12-00:01:08.184.
+ 
+   For all time, the clock runs at the same rate as TDB. There is only
+   one partition for this clock.
+
+\begindata
+
+       SCLK_KERNEL_ID            = ( @2014-12-22/15:09:00 )
+       
+       SCLK_DATA_TYPE_121        = ( 1 )
+       SCLK01_TIME_SYSTEM_121    = ( 2 )
+       SCLK01_N_FIELDS_121       = ( 2 )
+       SCLK01_MODULI_121         = ( 4294967296 65536 )
+       SCLK01_OFFSETS_121        = ( 0 0 )
+       SCLK01_OUTPUT_DELIM_121   = ( 1 )
+       
+       SCLK_PARTITION_START_121  = ( 0.0000000000000E+00 )
+       
+       SCLK_PARTITION_END_121    = ( 1.0995116277750E+18 )
+       
+       SCLK01_COEFFICIENTS_121   = (
+        
+           0.0000000000000E+00     @2016-07-12T00:01:08.184    1.0000000000000E+00
+           
+                                  )
+
+\begintext
+
+End of SCLK file.

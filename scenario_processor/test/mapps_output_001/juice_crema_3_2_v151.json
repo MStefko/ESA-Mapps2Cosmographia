@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "name": "Cosmographia JUICE Example",
+  "spiceKernels": [
+    "../kernels/mk/juice_crema_3_2_v151.tm",
+    "../kernels/juice_mapps_override.ck",
+    "../mapps_output_001/kernel.ck"
+  ]
+}

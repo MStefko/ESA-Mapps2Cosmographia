@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "name": "",
+  "require": [
+    "../config/juice_crema_3_2_v151.json",
+    "../config/spacecraft_JUICE_arcs.json",
+    "../sensors/sensor_JUICE_JANUS_CALLISTO.json",
+    "../observations/obs_JUICE_JANUS.json"
+  ]
+}

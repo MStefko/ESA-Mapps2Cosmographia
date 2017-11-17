@@ -1,0 +1,52 @@
+{
+   "version": "1.0",
+   "name": "Cosmographia JUICE Example",
+   "items": [
+      {
+         "class": "observation",
+         "name": "JUICE_GALA_OBS",
+         "startTime": "2032-09-01 14:12:00.000 UTC",
+         "endTime": "2032-09-02 15:14:20.000 UTC",
+         "center": "Ganymede",
+         "trajectoryFrame": {
+            "type": "BodyFixed",
+            "body": "Ganymede"
+         },
+         "bodyFrame": {
+            "type": "BodyFixed",
+            "body": "Ganymede"
+         },
+         "geometry": {
+            "type": "Observations",
+            "sensor": "JUICE_GALA",
+            "groups": [
+               {
+                  "startTime": "2032-09-01 14:12:00.000 UTC",
+                  "endTime": "2032-09-01 15:18:00.000 UTC",
+                  "obsRate": 0
+               },
+               {
+                  "startTime": "2032-09-02 02:10:00.000 UTC",
+                  "endTime": "2032-09-02 03:20:00.000 UTC",
+                  "obsRate": 0
+               },
+               {
+                  "startTime": "2032-09-02 14:10:00.000 UTC",
+                  "endTime": "2032-09-02 15:14:20.000 UTC",
+                  "obsRate": 0
+               }
+            ],
+            "footprintColor": [
+               0.0,
+               0.5,
+               0.5
+            ],
+            "footprintOpacity": 0.5,
+            "showResWithColor": false,
+            "alongTrackDivisions": 500,
+            "shadowVolumeScaleFactor": 1.75,
+            "fillInObservations": false
+         }
+      }
+   ]
+}

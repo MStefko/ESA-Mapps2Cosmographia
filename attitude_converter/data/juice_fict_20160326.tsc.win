@@ -1,0 +1,182 @@
+KPL/SCLK
+
+JUICE SCLK File -- TEST DATA -- FICTIONAL
+===========================================================================
+
+   This file is a SPICE spacecraft clock (SCLK) kernel containing
+   information required for the JUpiter ICy moons Explorer (JUICE)
+   spacecraft on-board clock to UTC conversion.
+   
+   This file contains the data necessary for converting from ET to
+   ticks for the FICTIONAL JUICE spacecraft clock (clock ID code 28)
+   
+   This is intended for study purposes or for those situations in which
+   a clock is not available for the structure whose orientation will be
+   modelled by a C-kernel.
+   
+   
+Version and Date
+-----------------------------------------------------------------------------
+
+   Version 0.2 -- June 04, 2016 -- Marc Costa Sitja, ESAC/ESA
+
+      Updated all NAIF ID codes from  -907* to -28* since the JUICE 
+      spacecraft NAIF ID has been updated from  -907 to -28.
+      
+      Updated filename following the convention described in
+      ``ESA-SCI-SPICE-SRS-0003_Cross_Mission_Filename_Convention''
+
+   Version 0.1 -- May 12, 2016 -- Jorge Diaz del Rio, ODC Space
+   
+      Included JUICE_RIME, JUICE_MAG_BOOM and JUICE_RPWI_LBPx frames in the
+      list of test CKs to be used with this file. Updated comments.
+
+   Version 0.0 -- March 26, 2016 -- Jorge Diaz del Rio, ODC Space
+   
+      Initial release.
+     
+
+Production/History of this SCLK file
+-----------------------------------------------------------------------------
+
+   This file has been manually created by Jorge Diaz del Rio (ODC Space)
+   and contains FICTIONAL DATA. It is intended ONLY for study purposes. NO 
+   DATA ANALYSIS SHALL BE PERFORMED BASED ON THIS FILE.  
+   
+   This SCLK kernel is intended to be used with test CK files with
+   structure IDs listed below on board the spacecraft -28 (JUICE):
+   
+              Name              NAIF ID
+      ======================   =========
+        JUICE_SPACECRAFT         -28000
+        JUICE_SA+Y               -28011
+        JUICE_SA-Y               -28013
+      
+        JUICE_MAG_BOOM           -28031
+      
+        JUICE_MAJIS_SCAN         -28401
+      
+        JUICE_RIME               -28601
+      
+        JUICE_RPWI_LBP1          -28701
+        JUICE_RPWI_LBP2          -28711
+        JUICE_RPWI_LBP3          -28721
+        JUICE_RPWI_LBP4          -28731
+      
+        JUICE_SWI_SCANNER        -28810
+      
+
+Usage
+-----------------------------------------------------------------------------
+
+   This file is used by the SPICE system as follows: programs that make
+   use of this frame kernel must "load" the kernel normally during 
+   program initialization. Loading the kernel associates the data items 
+   with their names in a data structure called the "kernel pool". The 
+   routine that loads a kernel into the pool is shown below:
+                                                                               
+      FORTRAN: (SPICELIB)
+
+         CALL FURNSH ( frame_kernel_name )
+
+      C: (CSPICE)
+
+         furnsh_c ( frame_kernel_name );
+
+      IDL: (ICY)
+
+         cspice_furnsh, frame_kernel_name
+         
+      MATLAB: (MICE)
+      
+         cspice_furnsh ( 'frame_kernel_name' )
+
+   This file must be loaded into the user's program in order to use the
+   SPICE SCLK family of subroutines to convert JUICE FICTIONAL spacecraft
+   on-board clock to ET and vice versa.
+   
+   This file was created and may be updated with a text editor or word
+   processor.
+
+
+SCLK Format
+-----------------------------------------------------------------------------
+
+   The on-board clock, the conversion for which is provided by this SCLK
+   file, consists of two fields:
+
+          SSSSSSSSSS.FFFFF
+
+   where:
+
+          SSSSSSSSSS -- count of on-board seconds
+
+          FFFFF      -- count of fractions of a second with one fraction
+                        being 1/65536 of a second; normally this field value
+                        is within 0..65535 range.
+
+
+References
+----------------------------------------------------------------------------
+
+   1.   SCLK Required Reading Document
+   
+   2.   TIME Required Reading Document
+   
+   3.   KERNEL Pool Required Reading Document
+   
+
+Inquiries and Contact Information
+-----------------------------------------------------------------------------
+
+   If you have any questions regarding this file contact SPICE support at
+   ESAC:
+
+           Marc Costa Sitja
+           (+34) 91-8131-457
+           mcosta@sciops.esa.int, esa_spice@sciops.esa.int
+           
+   or NAIF at JPL:
+   
+           Boris Semenov
+           (818) 354-8136
+           Boris.Semenov@jpl.nasa.gov
+
+           
+Kernel DATA
+-----------------------------------------------------------------------------
+
+   This SCLK file is constructed so that the valid SCLK strings are
+   simply the number of TDB seconds that have passed since the Ephemeris
+   epoch 2022-MAY-31-23:59:59.999. Thus 1/288929292.8201 simply
+   represents the epoch that occurs 288929292.12514 TDB seconds past the
+   ET epoch 2022-MAY-31-23:59:59.999.
+ 
+   For all time, the clock runs at the same rate as TDB. There is only
+   one partition for this clock.
+
+  \begindata
+
+
+        SCLK_KERNEL_ID             = ( @2016-03-26 )
+
+        SCLK_DATA_TYPE_28         = ( 1 )
+        SCLK01_TIME_SYSTEM_28     = ( 1 )
+        SCLK01_N_FIELDS_28        = ( 2 )
+        SCLK01_MODULI_28          = ( 4294967296 65536 )
+        SCLK01_OFFSETS_28         = ( 0 0 )
+        SCLK01_OUTPUT_DELIM_28    = ( 1 )
+
+        SCLK_PARTITION_START_28   = ( 0 )
+
+        SCLK_PARTITION_END_28     = ( 2.81474976710656E14 )
+
+        SCLK01_COEFFICIENTS_28    = (
+ 
+              0.0000000000000E+00     @2022-MAY-31-23:59:59.999         1 )
+
+
+  \begintext
+  
+  
+End of SCLK file.

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>742</width>
+    <height>443</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>MAPPS Attitude Data:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="le_MappsAttitude">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>20</y>
+     <width>431</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pb_MappsAttitude">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>20</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pb_MappsTimeline">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>70</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>70</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>MAPPS Timeline Dump:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="le_MappsTimeline">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>70</y>
+     <width>431</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pb_Scenario">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>120</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="le_Scenario">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>120</y>
+     <width>431</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>120</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cosmographia Scenario File:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pb_Generate">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>390</y>
+     <width>181</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Generate files!</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="l_version">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>400</y>
+     <width>111</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="text">
+    <string>version</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="instrumentTable">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>170</y>
+     <width>151</width>
+     <height>192</height>
+    </rect>
+   </property>
+   <property name="rowCount">
+    <number>10</number>
+   </property>
+   <property name="columnCount">
+    <number>1</number>
+   </property>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <row/>
+   <column/>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pb_MappsAttitude</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>browse_attitude()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>670</x>
+     <y>35</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>174</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_MappsTimeline</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>browse_timeline()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>670</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>174</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Scenario</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>browse_scenario()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>670</x>
+     <y>135</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>174</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Generate</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>generate()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>380</x>
+     <y>205</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>174</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>browse_attitude()</slot>
+  <slot>browse_timeline()</slot>
+  <slot>browse_scenario()</slot>
+  <slot>generate()</slot>
+ </slots>
+</ui>

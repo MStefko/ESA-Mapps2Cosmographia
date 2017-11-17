@@ -1,0 +1,114 @@
+{
+   "version": "1.0",
+   "name": "Cosmographia JUICE Example",
+   "items": [
+      {
+         "class": "sensor",  
+         "name": "JUICE_PEP_NIM_NEUION_S0",
+         "parent": "JUICE",
+         "center": "JUICE",
+         "trajectoryFrame": {
+            "type": "BodyFixed",
+            "body": "JUICE"
+         },
+         "geometry": {
+            "type": "Spice",
+            "instrName": "JUICE_PEP_NIM_NEUION_S0",
+            "target": "Ganymede",
+            "range": 1000,
+            "rangeTracking": true,
+            "frustumColor": [
+               0.0,
+               0.5,
+               0.5
+            ],
+            "frustumOpacity": 0.3,
+            "gridOpacity": 0.8,
+            "footprintOpacity": 0.8,
+            "sideDivisions": 125,
+            "onlyVisibleDuringObs": false
+         }
+      },
+      {
+         "class": "sensor",  
+         "name": "JUICE_PEP_NIM_NEUION_S3",
+         "parent": "JUICE",
+         "center": "JUICE",
+         "trajectoryFrame": {
+            "type": "BodyFixed",
+            "body": "JUICE"
+         },
+         "geometry": {
+            "type": "Spice",
+            "instrName": "JUICE_PEP_NIM_NEUION_S3",
+            "target": "Ganymede",
+            "range": 1000,
+            "rangeTracking": true,
+            "frustumColor": [
+               0.0,
+               0.5,
+               0.5
+            ],
+            "frustumOpacity": 0.3,
+            "gridOpacity": 0.8,
+            "footprintOpacity": 0.8,
+            "sideDivisions": 125,
+            "onlyVisibleDuringObs": false
+         }
+      },
+      {
+         "class": "sensor",  
+         "name": "JUICE_PEP_NIM_NEUION_S2",
+         "parent": "JUICE",
+         "center": "JUICE",
+         "trajectoryFrame": {
+            "type": "BodyFixed",
+            "body": "JUICE"
+         },
+         "geometry": {
+            "type": "Spice",
+            "instrName": "JUICE_PEP_NIM_NEUION_S2",
+            "target": "Ganymede",
+            "range": 1000,
+            "rangeTracking": true,
+            "frustumColor": [
+               0.0,
+               0.5,
+               0.5
+            ],
+            "frustumOpacity": 0.3,
+            "gridOpacity": 0.8,
+            "footprintOpacity": 0.8,
+            "sideDivisions": 125,
+            "onlyVisibleDuringObs": false
+         }
+      },
+      {
+         "class": "sensor",  
+         "name": "JUICE_PEP_NIM_NEUION_S1",
+         "parent": "JUICE",
+         "center": "JUICE",
+         "trajectoryFrame": {
+            "type": "BodyFixed",
+            "body": "JUICE"
+         },
+         "geometry": {
+            "type": "Spice",
+            "instrName": "JUICE_PEP_NIM_NEUION_S1",
+            "target": "Ganymede",
+            "range": 1000,
+            "rangeTracking": true,
+            "frustumColor": [
+               0.0,
+               0.5,
+               0.5
+            ],
+            "frustumOpacity": 0.3,
+            "gridOpacity": 0.8,
+            "footprintOpacity": 0.8,
+            "sideDivisions": 125,
+            "onlyVisibleDuringObs": false
+         }
+      }
+   ]
+}
