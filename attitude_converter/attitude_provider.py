@@ -1,3 +1,4 @@
+from __future__ import print_function
 import re
 import os
 from subprocess import call
@@ -45,7 +46,7 @@ class MappsReader:
                         raise ValueError('Error processing %s (ln: %d)<br><br>%s' % (os.path.basename(str(filename)), nlines, MappsReader.EXPECTED_MSG))
 
                 nlines +=1
-            print "  Lines read: {}".format(nlines)
+            print("  Lines read: {}".format(nlines))
 
 
 
@@ -122,7 +123,7 @@ class Mex2Ker:
         # file into current folder, and then move it into desired folder
         if " " in ck_path:
             output_ck_path = "temp_ck_file.ck"
-            print "Space in output CK path. Creating temporary file: {}".format(output_ck_path)
+            print("Space in output CK path. Creating temporary file: {}".format(output_ck_path))
         else:
             output_ck_path = ck_path
 
@@ -158,7 +159,7 @@ class Mex2Ker:
 
         # if we had a space, we move the output ck into the desired location
         if " " in ck_path:
-            print 'Moving file "{}" to "{}"'.format(output_ck_path, ck_path)
+            print('Moving file "{}" to "{}"'.format(output_ck_path, ck_path))
             shutil.move(output_ck_path, ck_path)
         os.chdir(original_cwd)
 

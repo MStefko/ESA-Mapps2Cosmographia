@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import traceback
 import time
@@ -31,19 +32,19 @@ def generation_task(gui):
         scenario_folder = os.path.dirname(scenario_file)
         new_folder_name = 'mapps_output_' + time.strftime("%Y%m%d_%H%M%S")
         new_folder_path = os.path.abspath(os.path.join(scenario_folder, '..', new_folder_name))
-        print "Creating scenario directory: {}".format(new_folder_path)
+        print("Creating scenario directory: {}".format(new_folder_path))
         os.makedirs(new_folder_path)
 
         output_ck_path = os.path.abspath(os.path.join(new_folder_path, ck_file_name))
-        print "Generating CK kernel: {}".format(output_ck_path)
+        print("Generating CK kernel: {}".format(output_ck_path))
         gui.attitude_converter.convert(attitude_file, output_ck_path)
 
         new_scenario_file_path = gui.scenario_processor.process_scenario(
             scenario_file, new_folder_name, ck_file_name)
-        print "Generating scenario file: {}".format(new_scenario_file_path)
+        print("Generating scenario file: {}".format(new_scenario_file_path))
         gui.timeline_processor.process_scenario(target_name, timeline_file,
                                                  new_scenario_file_path)
-        print "Finished."
+        print("Finished.")
     except Exception as e:
         msg = traceback.format_exc(0) + "\nSee console for more details."
     else:
