@@ -55,7 +55,6 @@ class ScenarioProcessor:
             with open(os.path.abspath(os.path.join(root_folder,output_folder_name,
                                    os.path.basename(kernel_file_path))), 'w+') as outfile:
                 json.dump(kernel_json, outfile, indent=2)
-            print kernel_json
 
             # replace the entry in the original scenario file with our own spiceKernels JSON
             self.scenario["require"][kernel_file_id] = "../{}/{}".format(output_folder_name,
