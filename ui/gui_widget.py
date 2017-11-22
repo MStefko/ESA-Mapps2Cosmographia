@@ -1,17 +1,16 @@
-from collections import OrderedDict
-import time
 import os
 import sys
-import traceback
+from collections import OrderedDict
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
 from attitude_converter import AttitudeConverter
+from config import JuiceConfig
+from worker_thread import TaskRunner, WorkingMessage
 from juice_win_converter import Ui_Form
 from scenario_processor import ScenarioProcessor
 from timeline_processor import TimelineProcessor
-from config import JuiceConfig
 
 
 class MappsConverter(QWidget):
@@ -24,6 +23,7 @@ class MappsConverter(QWidget):
         :param juice_config: JuiceConfig file
         """
         super(MappsConverter, self).__init__(parent)
+        self.exit_message = "No exit message."
         self.juice_config = juice_config
         self.attitude_converter = AttitudeConverter()
         self.scenario_processor = ScenarioProcessor(juice_config)
@@ -107,59 +107,35 @@ class MappsConverter(QWidget):
             file_name = str(f[0])
             self.juice_config.set_last_scenario_folder(file_name)
             self.form.le_Scenario.setText(file_name)
-             
+
     def generate(self):
-        # type: () -> None
-        """ Generates the scenario from inputs.
-        First, parse all file names. Then, use MEX2KER to convert MAPPS attitude into
-        a CK kernel. Generate a scenario using the MAPPS timeline, and put all necessary
-        include files into the folder.
+        """ Create the Working... mesage window, connect required thread signals together
+        and start the TaskRunner thread.
         """
-        try:
-            self._parse_instrument_checkboxes()
-            target_name = self.form.comboBox_targetList.currentText()
-            self.juice_config.set_selected_target(target_name)
+        self.task_runner = TaskRunner(self)
+        self.busy_widget = WorkingMessage("Working")
+        self.task_runner.finished.connect(self.loading_stop)
+        self.task_runner.start()
+        self.busy_widget.show()
 
-            obs_lifetime_min = int(self.form.le_ObsDecayTimeMin.text())
-            if obs_lifetime_min<0:
-                raise ValueError("Observation decay time can't be negative.")
-            self.timeline_processor.set_observation_lifetime_seconds(60*obs_lifetime_min)
-            self.juice_config.set_observation_lifetime_min(obs_lifetime_min)
 
-            ck_file_name = 'mapps_attitude_kernel.ck'
-            attitude_file = self.form.le_MappsAttitude.text()
-            scenario_file = self.form.le_Scenario.text()
-            timeline_file = self.form.le_MappsTimeline.text()
-            #if " " in scenario_file:
-            #    raise ValueError("Cosmographia scenario folder path cannot contain a space. "
-            #        "Please move entire JUICE Cosmographia folder to a location that does "
-            #        "not contain a space in the path. This is a MEX2KER limitation.")
+    def set_exit_message(self, msg):
+        # type: (str) -> None
+        """ Stores exit message from TaskRunner thread for later display.
 
-            scenario_folder = os.path.dirname(scenario_file)
-            new_folder_name = 'mapps_output_' + time.strftime("%Y%m%d_%H%M%S")
-            new_folder_path = os.path.abspath(os.path.join(scenario_folder,'..',new_folder_name))
-            print "Creating scenario directory: {}".format(new_folder_path)
-            os.makedirs(new_folder_path)
+        :param msg: Message received by TaskRunner thread
+        """
+        self.exit_message = msg
 
-            output_ck_path = os.path.abspath(os.path.join(new_folder_path,ck_file_name))
-            print "Generating CK kernel: {}".format(output_ck_path)
-            self.attitude_converter.convert(attitude_file, output_ck_path)
-
-            new_scenario_file_path = self.scenario_processor.process_scenario(
-                scenario_file, new_folder_name, ck_file_name)
-            print "Generating scenario file: {}".format(new_scenario_file_path)
-            self.timeline_processor.process_scenario(target_name, timeline_file,
-                                    new_scenario_file_path)
-            print "Finished."
-        except Exception as e:
-            traceback.print_exc()
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setText(traceback.format_exc(0) + "\nSee console for more details.")
-            msg.exec_()
-            return
-        else:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Information)
-            msg.setText('Scenario file generated at:\n\n{}'.format(new_scenario_file_path))
-            msg.exec_()
+    def loading_stop(self):
+        """ Stops all threads and displays the last TaskRunner exit message.
+        If exit message of thread was successful, also exits the program.
+        """
+        self.busy_widget.loading_stop()
+        self.task_runner.quit()
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setText(self.exit_message)
+        msg.exec_()
+        if self.exit_message.startswith("Success"):
+            sys.exit()
