@@ -19,13 +19,10 @@ else:
 
         
 juice_config = JuiceConfig(juice_plugin_path)
-attitude_converter = AttitudeConverter()
-scenario_processor = ScenarioProcessor(juice_config)
-timeline_processor = TimelineProcessor(juice_config)
 
 app = QApplication(sys.argv)
 window = QDialog()
-ui = MappsConverter(window, attitude_converter, scenario_processor,
-                    timeline_processor, juice_config)
+window.setWindowTitle("JUICE Plugin4Win")
+ui = MappsConverter(window, juice_config)
 window.show()
 sys.exit(app.exec_())

@@ -55,6 +55,12 @@ class JuiceConfig(ConfigParser.ConfigParser):
     def get_version(self):
         return self.get_property('runtime', 'version')
 
+    def get_observation_lifetime(self):
+        return int(self.get_property('ui', 'observation_lifetime_min'))
+
+    def set_observation_lifetime_min(self, value_min):
+        self.set_property('ui','observation_lifetime_min',str(int(value_min)))
+
     def get_object_property(self, section, option):
         if not self.has_option(section, option):
             return "{}"
@@ -71,14 +77,17 @@ class JuiceConfig(ConfigParser.ConfigParser):
     def set_checked_instruments(self, instrument_list):
         self.set_property('ui','checked_instruments',",".join(instrument_list))
 
+    def get_targets(self):
+        return json.loads(self.get_list_property('itl','targets'))
+
+    def get_selected_target(self):
+        return self.get_property('ui', 'selected_target')
+
+    def set_selected_target(self, selected_target):
+        return self.set_property('ui', 'selected_target', selected_target)
+
     def get_mode_sensors(self):
         return json.loads(self.get_object_property('itl', 'mode_sensors'))
-
-    def get_target(self):
-        return self.get_property('itl', 'target')
-
-    def get_events(self):
-        return json.loads(self.get_object_property('itl', 'events'))
 
     def get_sensor_colors(self):
         return json.loads(self.get_object_property('ui', 'sensor_colors'))
@@ -86,9 +95,10 @@ class JuiceConfig(ConfigParser.ConfigParser):
     def get_instruments(self):
         return json.loads(self.get_list_property('itl', 'instruments'))
 
-    def get_targets(self):
-        return json.loads(self.get_list_property('ui', 'targets'))
-
     def get_template_observation(self):
         template_path = os.path.abspath(os.path.join(__file__,'..','template_observation.json'))
+        return json.load(open(template_path), object_pairs_hook=OrderedDict)
+
+    def get_template_sensor(self):
+        template_path = os.path.abspath(os.path.join(__file__,'..','template_sensor.json'))
         return json.load(open(template_path), object_pairs_hook=OrderedDict)

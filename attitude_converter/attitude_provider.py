@@ -1,8 +1,9 @@
 import re
 import os
-from subprocess import call, Popen
+from subprocess import call
 from time_utils import MappsTime
 from sys import platform as _platform
+import shutil
 
 
 class MappsTimedQuaternion:
@@ -44,7 +45,7 @@ class MappsReader:
                         raise ValueError('Error processing %s (ln: %d)<br><br>%s' % (os.path.basename(str(filename)), nlines, MappsReader.EXPECTED_MSG))
 
                 nlines +=1
-            print nlines
+            print "  Lines read: {}".format(nlines)
 
 
 
@@ -117,6 +118,14 @@ class Mex2Ker:
         self.object_id = object_id
 
     def convert(self, quaternions, ck_path):
+        # if the output path contains a space, Mex2Ker will fail. instead we output the
+        # file into current folder, and then move it into desired folder
+        if " " in ck_path:
+            output_ck_path = "temp_ck_file.ck"
+            print "Space in output CK path. Creating temporary file: {}".format(output_ck_path)
+        else:
+            output_ck_path = ck_path
+
         moc_exp = MocExporter(quaternions, self.tls_path, self.tsc_path, self.object_name, self.object_id)
 
         working_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
@@ -130,31 +139,28 @@ class Mex2Ker:
             moc_exp.export_setup(setup_file)
 
         try:
-            os.remove(ck_path)
+            os.remove(output_ck_path)
         except OSError:
             print ('pass')
+        original_cwd = os.getcwd()
         os.chdir(working_path)
 
-        if _platform == "linux" or _platform == "linux2":
-            # linux
-            call(['./mex2ker_linux_32bit',
-                  '-input', 'quaternion.moc',
-                  '-setup', 'quaternion.setup',
-                  '-output', ck_path])
-        elif _platform == "darwin":
-            # MAC OS X
-            print working_path
-            os.environ['DYLD_LIBRARY_PATH'] = working_path
-            call(['./mex2ker_mac_64bit',
-                  '-input', 'quaternion.moc',
-                  '-setup', 'quaternion.setup',
-                  '-output', ck_path])
-        elif _platform == "win32":
+        if _platform == "win32":
             # Windows
-            call(['./mex2ker_win_32bit',
-                 '-input', 'quaternion.moc',
-                 '-setup', 'quaternion.setup',
-                 '-output', ck_path])
+            return_val = call(['./mex2ker_win_32bit',
+                               '-input', 'quaternion.moc',
+                               '-setup', 'quaternion.setup',
+                               '-output', output_ck_path])
+            if return_val:
+                raise RuntimeError("Mex2Ker returned error value: {}".format(return_val))
+        else:
+            raise RuntimeError("Unsupported platform.")
+
+        # if we had a space, we move the output ck into the desired location
+        if " " in ck_path:
+            print 'Moving file "{}" to "{}"'.format(output_ck_path, ck_path)
+            shutil.move(output_ck_path, ck_path)
+        os.chdir(original_cwd)
 
 
 class JuiceMex2Ker(Mex2Ker):

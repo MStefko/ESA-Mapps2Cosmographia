@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Cosmographia_JUICE.iml" filepath="$PROJECT_DIR$/.idea/Cosmographia_JUICE.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../JUICE_plugin_win/.idea/JUICE_plugin_win.iml" filepath="$PROJECT_DIR$/../JUICE_plugin_win/.idea/JUICE_plugin_win.iml" />
     </modules>
   </component>
 </project>
