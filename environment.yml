@@ -1,0 +1,5 @@
+name: juice_plugin
+dependencies:
+- python=2.7
+- simplejson
+- pyqt=5

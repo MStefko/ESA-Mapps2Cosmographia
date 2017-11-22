@@ -19,7 +19,7 @@ class ScenarioProcessor:
         :return: Path to generated scenario JSON path.
         """
         root_folder = os.path.abspath(os.path.join(scenario_file_path, '..', '..'))
-
+        kernel_file_path = ""
         with open(scenario_file_path) as f:
             self.scenario = json.load(f, object_pairs_hook=OrderedDict)
         # this root scenario file can but doesn't have to contain the "spiceKernels" entry
@@ -29,7 +29,6 @@ class ScenarioProcessor:
             # which will hopefully the field "spiceKernels"
             if not "require" in self.scenario:
                 raise ValueError('Neither "require" nor "spiceKernels" fields present in .json file.')
-            kernel_file_path = None
             kernel_file_id = None
             # Iterate over the files, and look for the file that contains "spiceKernels"
             for idx, file_relative_path in enumerate(self.scenario["require"]):
@@ -45,9 +44,8 @@ class ScenarioProcessor:
                     kernel_file_path = file_relative_path
                     kernel_file_id = idx
                     break
-            if kernel_file_path is None:
+            if not kernel_file_path:
                 raise RuntimeError('Could not find JSON file containing "spiceKernels".')
-
             # Now we know which file contains the "spiceKernels" entry
             # We add our own kernel to the list
             kernel_json["spiceKernels"].append("../{}/{}".format(output_folder_name, ck_file_name))
@@ -59,18 +57,21 @@ class ScenarioProcessor:
             # replace the entry in the original scenario file with our own spiceKernels JSON
             self.scenario["require"][kernel_file_id] = "../{}/{}".format(output_folder_name,
                                    os.path.basename(kernel_file_path))
+        else:
+            # append straight into scenario file
+            self.scenario["spiceKernels"].append("../{}/{}".format(output_folder_name, ck_file_name))
 
-            new_scenario_name = "LOAD_SCENARIO.json"
-            # check if we would have a name conflict with kernel file
-            # (i.e. kernel file is named "LOAD_SCENARIO.json" as well).
-            # if we do, change the scenario file name to "RUN_SCENARIO.json"
-            if os.path.basename(kernel_file_path)==new_scenario_name:
-                new_scenario_name = "RUN_SCENARIO.json"
+        new_scenario_name = "LOAD_SCENARIO.json"
+        # check if we would have a name conflict with kernel file
+        # (i.e. kernel file is named "LOAD_SCENARIO.json" as well).
+        # if we do, change the scenario file name to "RUN_SCENARIO.json"
+        if os.path.basename(kernel_file_path)==new_scenario_name:
+            new_scenario_name = "RUN_SCENARIO.json"
 
-            new_scenario_file_path = os.path.abspath(os.path.join(root_folder,
-                output_folder_name, new_scenario_name))
-            # write the scenario JSON file
-            with open(new_scenario_file_path, 'w+') as outfile:
-                json.dump(self.scenario, outfile, indent=2)
+        new_scenario_file_path = os.path.abspath(os.path.join(root_folder,
+            output_folder_name, new_scenario_name))
+        # write the scenario JSON file
+        with open(new_scenario_file_path, 'w+') as outfile:
+            json.dump(self.scenario, outfile, indent=2)
         return new_scenario_file_path
 

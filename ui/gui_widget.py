@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import *
 from attitude_converter import AttitudeConverter
 from config import JuiceConfig
 from worker_thread import TaskRunner, WorkingMessage
-from juice_win_converter import Ui_Form
+from ui.juice_win_converter import Ui_Form
 from scenario_processor import ScenarioProcessor
 from timeline_processor import TimelineProcessor
 
@@ -78,7 +78,7 @@ class MappsConverter(QWidget):
         # type: () -> None
         """ Retrieves check values from GUI and informs the timeline processor and config. """
         checked_instruments = []
-        for name, item in self.instrument_checkboxes.iteritems():
+        for name, item in self.instrument_checkboxes.items():
             if item.checkState() == Qt.Checked:
                 checked_instruments.append(name)
         self.juice_config.set_checked_instruments(checked_instruments)

@@ -2,7 +2,7 @@ from __future__ import print_function
 import re
 import os
 from subprocess import call
-from time_utils import MappsTime
+from attitude_converter.time_utils import MappsTime
 from sys import platform as _platform
 import shutil
 

@@ -75,7 +75,7 @@ class MappsTime:
     def tdb_str(self):
         return self.tdb.strftime(MappsTime.moc_pattern)
 
-    def utc_tz_aware(utc):
+    def utc_tz_aware(self, utc):
         return datetime(utc.year, utc.month, utc.day, utc.hour, utc.minute, utc.second, tzinfo=UTC())
 
     @staticmethod

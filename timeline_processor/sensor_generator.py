@@ -35,7 +35,7 @@ class SensorGenerator:
         # If you change the filenames, you need to change the TimelineProcessor as well
         sensor_folder_path = os.path.abspath(os.path.join(output_folder_path, "sensors"))
         os.makedirs(sensor_folder_path)
-        for instrument_name, sensor_dict in observation_dict.iteritems():
+        for instrument_name, sensor_dict in observation_dict.items():
             for sensor_name in sensor_dict:
                 sensor_json = self._generate_sensor_json(instrument_name,
                                                          sensor_name, target_name)

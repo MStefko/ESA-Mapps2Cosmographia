@@ -1,17 +1,22 @@
-import ConfigParser
 import json
 import os
 import datetime
 from collections import OrderedDict
 
+import sys
+if sys.version_info > (3,0):
+    from configparser import ConfigParser
+else:
+    from ConfigParser import ConfigParser
 
-class JuiceConfig(ConfigParser.ConfigParser):
+
+class JuiceConfig(ConfigParser):
 
     def __init__(self, path):
-        ConfigParser.ConfigParser.__init__(self)
+        ConfigParser.__init__(self)
         self.file = os.path.join(path, 'juice_plugin.ini')
         self.read([self.file])
-        self.set_property('runtime','last_use', datetime.datetime.utcnow())
+        self.set_property('runtime','last_use', str(datetime.datetime.utcnow()))
 
     def set_property(self, section, option, value):
         if not self.has_section(section) :

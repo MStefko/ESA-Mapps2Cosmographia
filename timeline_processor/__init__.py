@@ -149,8 +149,8 @@ class TimelineProcessor:
         os.makedirs(os.path.abspath(os.path.join(output_folder_path,'observations')))
 
         # Iterate over each sensor
-        for instrument_name, sensor_dict in observations.iteritems():
-            for sensor_name, observation_list in sensor_dict.iteritems():
+        for instrument_name, sensor_dict in observations.items():
+            for sensor_name, observation_list in sensor_dict.items():
                 # sensor JSON needs to be added to the require_json
                 sensor_json_path = "sensors/sensor_{}_{}.json".format(sensor_name, target_name)
                 if not sensor_json_path in require_json["require"]:

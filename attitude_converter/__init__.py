@@ -1,5 +1,6 @@
 from __future__ import print_function
-from attitude_provider import MappsReader, JuiceMex2Ker
+
+from attitude_converter.attitude_provider import MappsReader, JuiceMex2Ker
 
 
 class AttitudeConverter:
