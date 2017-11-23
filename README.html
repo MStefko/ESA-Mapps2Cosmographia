@@ -1,0 +1,72 @@
+﻿<h1 id="juice-cosmographia-conversion-plugin">JUICE Cosmographia Conversion Plugin</h1>
+
+<p>This plugin allows you to import MAPPS data (attitude + instrument operation) as a Cosmographia scenario.</p>
+
+
+
+<h2 id="installation">Installation</h2>
+
+<p>This plugin requires <code>python2.7</code> with packages <code>pyqt5</code> and <code>simplejson</code> installed.</p>
+
+<p>If you use Anaconda, you can install using these steps: <br>
+ 1. Open Anaconda prompt, and navigate to root folder of this plugin <code>JUICE_plugin_win</code>. <br>
+ 2. <code>conda env create</code> (This creates a new environment called <code>juice_plugin</code> with all  <br>
+ required packages and correct Python version.) <br>
+ 3. <code>activate juice_plugin</code> (This activates the newly-created environment.) <br>
+ 4. <code>python run_plugin.py</code> (The GUI should be displayed now.)</p>
+
+<p><img src="img/installation.png" alt="" title=""></p>
+
+<p><img src="img/plugin_gui.png" alt="" title=""></p>
+
+<p>For subsequent runs, you need to <code>activate juice_plugin</code> environment every time you restart Anaconda prompt.</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>The program requires input of 3 data files: <br>
+1. <code>MAPPS Attitude Data</code>: This is a MAPPS <code>.csv</code> file created using  <br>
+<code>MAPPS -&gt; Data -&gt; Generate Datapack -&gt; Quaternions+AttitudeMatrix</code>. It contains <br>
+required quaternion data for generating a new CK kernel. <br>
+2. <code>MAPPS Timeline Dump</code>: This is a MAPPS <code>.asc</code> file created using <br>
+<code>MAPPS -&gt; Data -&gt; Dump Timeline Data...</code>. It contains information about instrument <br>
+activity. <br>
+3. <code>Cosmographia Scenario File</code>: This is a <code>.json</code> file that you would normally use to load <br>
+a JUICE Cosmographia scenario without any observations (i.e. only to display JUICE’s trajectory). <br>
+This file should reside in <code>../JUICE/scenarios</code> folder.</p>
+
+<ul>
+<li>You can customize which instrument operations will be displayed using the checkboxes.</li>
+<li><code>Target body</code> specifies which body is used to display instrument ground tracks. For moon flybys, <br>
+use the appropriate moon.</li>
+<li><code>Observation decay time [min]</code> specifies time duration for which  <br>
+the ground track of an observation <br>
+is still displayed, after the observation’s end time.</li>
+</ul>
+
+<p>To generate a scenario, click <code>Generate files!</code>. A <code>mapps_output_yyyymmdd_HHMMSS</code> folder will be created <br>
+in the Cosmographia <code>JUICE/</code> directory. Inside this folder all necessary files are stored. No <br>
+other files are modified by this script.</p>
+
+<p>To launch this scenario, go to <code>Cosmographia -&gt; File -&gt; Open Catalog...</code>, and open the <code>LOAD_SCENARIO.json</code> <br>
+file. You need to set the time of interest and find JUICE manually, using Cosmographia’s controls.</p>
+
+<p><img src="img/load_cosmographia_catalog.png" alt="" title=""></p>
+
+<p><img src="img/cosmographia.png" alt="" title=""></p>
+
+
+
+<h2 id="configuration">Configuration</h2>
+
+<p>Some settings can be adjusted in <code>juice_plugin.ini</code> in the <code>[itl]</code> section: <br>
+- <code>mode_sensors</code>: This dictionary defines which instrument modes are considered “on” states, and which <br>
+sensor FOV is associated with each mode. Each entry has the format <code>"instrument_mode": "sensor_fov_name"</code>. <br>
+- <code>instruments</code>: This is a list of instrument names which become selectable in the GUI. <br>
+- <code>sensor_colors</code>: This dictionary defines for each instrument an <code>RGB</code> color which is used to display <br>
+sensor FOVs and ground tracks.</p>
+
+<h2 id="issues">Issues</h2>
+<ul>
+  <li>Plugin doesn't support multiple instruments having the same name for a mode (e.g. two instruments can't
+  have a mode with the same name, such as <code>SCIENCE_20pct</code>.</li>
+</ul>

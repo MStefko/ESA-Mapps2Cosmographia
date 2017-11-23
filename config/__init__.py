@@ -95,7 +95,7 @@ class JuiceConfig(ConfigParser):
         return json.loads(self.get_object_property('itl', 'mode_sensors'))
 
     def get_sensor_colors(self):
-        return json.loads(self.get_object_property('ui', 'sensor_colors'))
+        return json.loads(self.get_object_property('itl', 'sensor_colors'))
 
     def get_instruments(self):
         return json.loads(self.get_list_property('itl', 'instruments'))
