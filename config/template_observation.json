@@ -4,14 +4,11 @@
    "items": [
       {
          "class": "observation",
-         "center": "Callisto",
          "trajectoryFrame": {
-            "type": "BodyFixed",
-            "body": "Callisto"
+            "type": "BodyFixed"
          },
          "bodyFrame": {
-            "type": "BodyFixed",
-            "body": "Callisto"
+            "type": "BodyFixed"
          },
          "geometry": {
             "type": "Observations",

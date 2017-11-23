@@ -1,8 +1,10 @@
+import calendar
 from collections import namedtuple, OrderedDict
 from datetime import datetime, timedelta
 from config import JuiceConfig
 import simplejson as json
 import os
+import jdcal
 
 from timeline_processor.sensor_generator import SensorGenerator
 
@@ -39,6 +41,7 @@ class TimelineProcessor:
         observations = self._process_parsed_lines_into_observations(parsed_lines)
         self.sensor_generator.generate_sensors(observations, target_name, output_folder_path)
         self._generate_observation_files(observations, target_name, new_require_json_path)
+        self._generate_bat_file(observations, new_require_json_path)
 
     def set_instruments(self, instrument_list):
         # type: (list) -> None
@@ -163,6 +166,9 @@ class TimelineProcessor:
                     edit_entry["name"] = file_name[:-5]
                     edit_entry["startTime"] = self._ftime(times[0])
                     edit_entry["endTime"] = self._ftime(self._delay_observation_end_time(times[1]))
+                    edit_entry["center"] = target_name
+                    edit_entry["trajectoryFrame"]["body"] = target_name
+                    edit_entry["bodyFrame"]["body"] = target_name
                     d = OrderedDict()
                     d["startTime"] = self._ftime(times[0])
                     d["endTime"] = self._ftime(times[1])
@@ -179,6 +185,32 @@ class TimelineProcessor:
         with open(require_json_path, 'w') as json_file:
             json.dump(require_json, json_file, indent=2)
         return
+
+    def _generate_bat_file(self, observations, require_json_path):
+        bat_file_name = "run_scenario.bat"
+        dt = self._find_first_start_time(observations)
+        jd_midnight = sum(jdcal.gcal2jd(dt.year, dt.month, dt.day))
+        jd = sum([jd_midnight, dt.hour/24.0, dt.minute/(24.0*60), dt.second/(24.0*60*60)])
+        output_dir_path = os.path.abspath(os.path.dirname(require_json_path))
+        output_dir_short_path = os.path.join("JUICE",os.path.basename(output_dir_path))
+        output_bat_file_path = os.path.abspath(os.path.join(output_dir_path, bat_file_name))
+        with open(output_bat_file_path, 'w+') as f:
+            file_contents = \
+                'Cosmographia ^\n' +\
+                '{} ^\n'.format(os.path.join(output_dir_short_path, os.path.basename(require_json_path))) +\
+                '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.025933&y=0.016843&z=-0.075476'.format(jd) +\
+                '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=1&fov=50"\n\n'
+            f.write(file_contents)
+
+    def _find_first_start_time(self, observations):
+        times = []
+        for instrument_name, sensor_dict in observations.items():
+            for sensor_name, observation_list in sensor_dict.items():
+                for observation in observation_list:
+                    times.append(observation[0])
+        return min(times, key=lambda s: calendar.timegm(s.utctimetuple()))
+
+
 
     def _ftime(self, time):
         # type: (datetime) -> str

@@ -3,3 +3,4 @@ dependencies:
 - python=2.7
 - simplejson
 - pyqt=5
+- jdcal
