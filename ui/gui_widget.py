@@ -118,7 +118,6 @@ class MappsConverter(QWidget):
         self.task_runner.start()
         self.busy_widget.show()
 
-
     def set_exit_message(self, msg):
         # type: (str) -> None
         """ Stores exit message from TaskRunner thread for later display.

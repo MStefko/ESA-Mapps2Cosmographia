@@ -41,7 +41,12 @@ To generate a scenario, click `Generate files!`. A `mapps_output_yyyymmdd_HHMMSS
 in the Cosmographia `JUICE/` directory. Inside this folder all necessary files are stored. No
 other files are modified by this script.
 
-To launch this scenario, go to `Cosmographia -> File -> Open Catalog...`, and open the `LOAD_SCENARIO.json`
+To launch this scenario, there are three options:
+
+ 1. Launch immediately by selecting `Close & launch Cosmographia` option in the dialog that appears after
+ the scenario is generated (this runs the `run_scenario.bat` script in the output folder).
+ 2. Run the `run_scenario.bat` script manually. This automatically finds JUICE and sets time of first observation.
+ 3. Launch Cosmographia, go to `Cosmographia -> File -> Open Catalog...`, and open the `LOAD_SCENARIO.json`
 file. You need to set the time of interest and find JUICE manually, using Cosmographia's controls.
 
 ![](img/load_cosmographia_catalog.png)

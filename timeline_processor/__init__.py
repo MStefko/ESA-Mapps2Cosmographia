@@ -187,14 +187,23 @@ class TimelineProcessor:
         return
 
     def _generate_bat_file(self, observations, require_json_path):
+        # type: (OrderedDict, str) -> None
+        """ Generates .bat file that can launch Cosmographia already with the scenario loaded
+        with camera following JUICE, and at time of beginning of first parsed obsevation.
+
+        :param observations: Observation dictionary
+        :param require_json_path: Path to observation base .json file
+        :return:
+        """
         bat_file_name = "run_scenario.bat"
         dt = self._find_first_start_time(observations)
-        jd_midnight = sum(jdcal.gcal2jd(dt.year, dt.month, dt.day))
-        jd = sum([jd_midnight, dt.hour/24.0, dt.minute/(24.0*60), dt.second/(24.0*60*60)])
+        jd = self._get_jd_time(dt)
         output_dir_path = os.path.abspath(os.path.dirname(require_json_path))
         output_dir_short_path = os.path.join("JUICE",os.path.basename(output_dir_path))
         output_bat_file_path = os.path.abspath(os.path.join(output_dir_path, bat_file_name))
         with open(output_bat_file_path, 'w+') as f:
+            # the string specifies the location and camera orientation next to JUICE, you can get a similar
+            # string URL by pressing Ctrl+U in Cosmographia
             file_contents = \
                 'Cosmographia ^\n' +\
                 '{} ^\n'.format(os.path.join(output_dir_short_path, os.path.basename(require_json_path))) +\
@@ -202,7 +211,25 @@ class TimelineProcessor:
                 '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=1&fov=50"\n\n'
             f.write(file_contents)
 
+    def _get_jd_time(self, timestamp):
+        # type: (datetime) -> float
+        """ Calculate MJD time from a timestamp.
+
+        :param timestamp: Time to convert
+        :return: Calculated mjd time.
+        """
+        jd_midnight = sum(jdcal.gcal2jd(timestamp.year, timestamp.month, timestamp.day))
+        jd = sum([jd_midnight, timestamp.hour/24.0, timestamp.minute/(24.0*60),
+                  timestamp.second/(24.0*60*60)])
+        return jd
+
     def _find_first_start_time(self, observations):
+        # type: (OrderedDict) -> datetime
+        """ Finds the earliest start time of an observation.
+
+        :param observations: Observation dictionary
+        :return:
+        """
         times = []
         for instrument_name, sensor_dict in observations.items():
             for sensor_name, observation_list in sensor_dict.items():
