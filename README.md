@@ -94,10 +94,10 @@ file. You need to set the time of interest and find JUICE manually, using Cosmog
 **Fig 6: Cosmographia with running generated scenario.**
 
 ## Configuration
-Some settings can be adjusted in `juice_plugin.ini` in the `[itl]` section:
+Some settings can be adjusted in `juice_plugin_static.ini` in the `[itl]` section (make sure you adhere to the JSON format specification, otherwise errors will occur):
+
 - `mode_sensors`: This dictionary defines which instrument modes are considered "on" states, and which
-sensor FOV is associated with each mode. Each entry has the format `"instrument_mode": "sensor_fov_name"`.
-- `instruments`: This is a list of instrument names which become selectable in the GUI.
+sensor FOV is associated with each mode. It is organised by instrument name, where for each instrument you have its own dictionary. Each entry of this dictionary has the format `"instrument_mode": "sensor_fov_name"`.
 - `sensor_colors`: This dictionary defines for each instrument an `RGB` color which is used to display
 sensor FOVs and ground tracks.
 
@@ -107,6 +107,8 @@ sensor FOVs and ground tracks.
 ## Troubleshooting
 - Script runs fine, but Cosmographia displays `Error loading kernel: <kernel path>...`?
     - Make sure that the `PATH_VALUES` variable in the given kernel is correctly set.
+- `TypeError: a bytes-like object is required, not 'str'`
+	- You are using Python 3. Make sure you `activate juice_plugin` environment for correct Python version (2.7).
 
 ## Acknowledgements
 - This script is based on Rafael Andres' JUICE plugin for Linux and Mac.

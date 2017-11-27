@@ -376,12 +376,13 @@ file. You need to set the time of interest and find JUICE manually, using Cosmog
 <p><img src="img/cosmographia.png" /></p>
 <p><strong>Fig 6: Cosmographia with running generated scenario.</strong></p>
 <h2>Configuration</h2>
-<p>Some settings can be adjusted in <code>juice_plugin.ini</code> in the <code>[itl]</code> section:
-- <code>mode_sensors</code>: This dictionary defines which instrument modes are considered &quot;on&quot; states, and which
-sensor FOV is associated with each mode. Each entry has the format <code>&quot;instrument_mode&quot;: &quot;sensor_fov_name&quot;</code>.
-- <code>instruments</code>: This is a list of instrument names which become selectable in the GUI.
-- <code>sensor_colors</code>: This dictionary defines for each instrument an <code>RGB</code> color which is used to display
-sensor FOVs and ground tracks.</p>
+<p>Some settings can be adjusted in <code>juice_plugin_static.ini</code> in the <code>[itl]</code> section (make sure you adhere to the JSON format specification, otherwise errors will occur):</p>
+<ul>
+<li><code>mode_sensors</code>: This dictionary defines which instrument modes are considered &quot;on&quot; states, and which
+sensor FOV is associated with each mode. It is organised by instrument name, where for each instrument you have its own dictionary. Each entry of this dictionary has the format <code>&quot;instrument_mode&quot;: &quot;sensor_fov_name&quot;</code>.</li>
+<li><code>sensor_colors</code>: This dictionary defines for each instrument an <code>RGB</code> color which is used to display
+sensor FOVs and ground tracks.</li>
+</ul>
 <h2>Issues</h2>
 <ul>
 <li>Please report any issues to <a href="&#109;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#109;&#x61;r&#x63;&#101;&#x6c;.s&#x74;&#x65;&#102;&#107;&#x6f;&#64;e&#x73;&#97;&#46;&#105;&#110;&#116;">&#x4d;&#97;&#x72;&#99;&#x65;&#x6c;&#32;&#83;t&#x65;&#x66;k&#x6f;</a></li>
@@ -392,6 +393,12 @@ sensor FOVs and ground tracks.</p>
 Script runs fine, but Cosmographia displays <code>Error loading kernel: &lt;kernel path&gt;...</code>?
 <ul>
 <li>Make sure that the <code>PATH_VALUES</code> variable in the given kernel is correctly set.</li>
+</ul>
+</li>
+<li>
+<code>TypeError: a bytes-like object is required, not 'str'</code>
+<ul>
+<li>You are using Python 3. Make sure you <code>activate juice_plugin</code> environment for correct Python version (2.7).</li>
 </ul>
 </li>
 </ul>
