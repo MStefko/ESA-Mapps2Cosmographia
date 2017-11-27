@@ -1,6 +1,7 @@
 from __future__ import print_function
 import os
 import sys
+import traceback
 from collections import OrderedDict
 
 from PyQt5.QtCore import *
@@ -116,6 +117,17 @@ class MappsConverter(QWidget):
         """ Create the Working... mesage window, connect required thread signals together
         and start the TaskRunner thread.
         """
+        # verify all three files exist
+        try:
+            self._verify_file_existence()
+        except Exception as e:
+            QMessageBox.warning(
+                self, "File missing!", traceback.format_exc(0),
+                QMessageBox.Ok, QMessageBox.Ok)
+            traceback.print_exc()
+            return
+
+        # verify scenario file is placed in good location for bat script
         self.execute_bat_script = True
         scenario_error_message = self._verify_scenario_file_location()
         # if we have an error, display error message
@@ -128,6 +140,8 @@ class MappsConverter(QWidget):
             self.execute_bat_script = False
             if response == QMessageBox.Abort:
                 return
+
+        # run the generation task
         self.task_runner = TaskRunner(self)
         self.busy_widget = WorkingMessage("Working")
         self.task_runner.finished.connect(self.loading_stop)
