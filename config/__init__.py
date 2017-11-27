@@ -21,7 +21,7 @@ class JuiceConfig(ConfigParser):
         self.set_property('runtime', 'last_use', str(datetime.datetime.utcnow()))
 
     def set_property(self, section, option, value):
-        if not self.has_section(section) :
+        if not self.has_section(section):
             self.add_section(section)
         self.set(section, option, value)
         self.save()
@@ -66,7 +66,7 @@ class JuiceConfig(ConfigParser):
         return int(self.get_property('ui', 'observation_lifetime_min'))
 
     def set_observation_lifetime_min(self, value_min):
-        self.set_property('ui','observation_lifetime_min', str(int(value_min)))
+        self.set_property('ui', 'observation_lifetime_min', str(int(value_min)))
 
     def get_object_property(self, section, option):
         if not self.has_option(section, option):
@@ -82,7 +82,7 @@ class JuiceConfig(ConfigParser):
         return self.get_property('ui', 'checked_instruments').split(',')
 
     def set_checked_instruments(self, instrument_list):
-        self.set_property('ui', 'checked_instruments',",".join(instrument_list))
+        self.set_property('ui', 'checked_instruments', ",".join(instrument_list))
 
     def get_targets(self):
         return json.loads(self.get_list_property('itl', 'targets'))

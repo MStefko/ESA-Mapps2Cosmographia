@@ -120,7 +120,8 @@ class MappsConverter(QWidget):
         scenario_error_message = self._verify_scenario_file_location()
         # if we have an error, display error message
         if scenario_error_message[0]:
-            response = QMessageBox.warning(self, "Scenario file location warning",
+            response = QMessageBox.warning(
+                self, "Scenario file location warning",
                 scenario_error_message[1], QMessageBox.Ok | QMessageBox.Abort,
                 QMessageBox.Ok)
             # also disable generation of bat file because it wouldn't work
@@ -154,11 +155,13 @@ class MappsConverter(QWidget):
         if not (os.path.exists(os.path.join(cosmographia_folder_path, 'Cosmographia.exe'))
                 and juice_folder_name == "JUICE"
                 and scenario_folder_name == "scenarios"):
-            error_message = (1,
+            error_message = (
+                1,
                 "Scenario file is not placed in folder '<cosmographia_root_folder>\\JUICE\\scenarios\\'. "
                 "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
         elif os.path.abspath(cosmographia_folder_path) not in windows_paths:
-            error_message = (2,
+            error_message = (
+                2,
                 "Cosmographia root folder '{}' not found in Windows PATH environment variable.".format(
                     cosmographia_folder_path.strip("\\")) +
                 "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")

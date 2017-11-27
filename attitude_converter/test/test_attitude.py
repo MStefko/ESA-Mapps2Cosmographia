@@ -1,6 +1,6 @@
 import unittest
 import os
-from attitude.attitude_provider import MappsReader, JuiceMex2Ker
+from attitude_converter.attitude_provider import MappsReader, JuiceMex2Ker
 
 
 class ReaderTests(unittest.TestCase):

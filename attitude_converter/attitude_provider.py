@@ -36,8 +36,8 @@ class MappsReader:
         with open(filename) as qmapps:
             nlines = 0
             for line in qmapps:
-                quatMatch = re.match('(\d+).*', line)
-                if quatMatch:
+                quat_match = re.match('(\d+).*', line)
+                if quat_match:
                     fields = line.split(',')
                     try:
                         tq = MappsTimedQuaternion(fields[2], fields[3], fields[4], fields[5], fields[6])
@@ -45,7 +45,7 @@ class MappsReader:
                     except:
                         raise ValueError('Error processing %s (ln: %d)<br><br>%s' %
                                          (os.path.basename(str(filename)),
-                                         nlines, MappsReader.EXPECTED_MSG))
+                                          nlines, MappsReader.EXPECTED_MSG))
 
                 nlines += 1
             print("  Lines read: {}".format(nlines))

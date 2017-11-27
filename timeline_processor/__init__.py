@@ -44,7 +44,7 @@ class TimelineProcessor:
         self._generate_bat_file(observations, new_require_json_path)
 
     def set_instruments(self, instrument_list):
-        # type: (list[str]) -> None
+        # type: (List[str]) -> None
         """
         :param instrument_list: List of instruments to parse, i.e. ["JANUS", "MAJIS"]
         """
@@ -61,7 +61,7 @@ class TimelineProcessor:
         self.observation_lifetime_seconds = lifetime
 
     def _parse_experiment_modes(self, f):
-        # type: (file) -> list[Entry]
+        # type: (file) -> List[Entry]
         """
 
         :param f: File handle of MAPPS Timeline Dump .asc file
@@ -82,7 +82,7 @@ class TimelineProcessor:
         Entry = namedtuple('Entry', ['utc_timestamp', 'instrument_name', 'mode'])
         for line in f:
             # break at line that only has newline character
-            if len(line)<2:
+            if len(line) < 2:
                 break
             # parse the required entries on the line
             utc_timestamp = datetime.strptime(line[0:20], "%d-%b-%Y_%H:%M:%S")
@@ -92,7 +92,7 @@ class TimelineProcessor:
         return parsed_lines
 
     def _process_parsed_lines_into_observations(self, parsed_lines):
-        # type: (list[Entry]) -> OrderedDict
+        # type: (List[Entry]) -> OrderedDict
         """ Processes parsed lines into a nested dictionary, which for each instrument and
         each sensor contains a list of (start, end) times for individial observations.
 

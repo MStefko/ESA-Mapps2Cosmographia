@@ -21,11 +21,11 @@ window = QDialog()
 window.setWindowTitle("JUICE Plugin4Win")
 
 
-def windowCloseEvent(event):
+def window_close_event(event):
     sys.exit()
 
 
-window.closeEvent = windowCloseEvent
+window.closeEvent = window_close_event
 
 ui = MappsConverter(window, juice_config)
 window.show()
