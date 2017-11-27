@@ -1,7 +1,7 @@
 import json
 import os
 import datetime
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 import sys
 if sys.version_info > (3, 0):
@@ -94,13 +94,17 @@ class JuiceConfig(ConfigParser):
         return self.set_property('ui', 'selected_target', selected_target)
 
     def get_mode_sensors(self):
-        return json.loads(self.get_object_property('itl', 'mode_sensors'))
+        return json.loads(self.get_object_property('itl', 'mode_sensors'), object_pairs_hook=OrderedDict)
 
     def get_sensor_colors(self):
-        return json.loads(self.get_object_property('itl', 'sensor_colors'))
+        # If entry is missing, the defaultdict will return a gray value
+        def default_color():
+            color = [0.5, 0.5, 0.5]
+            return color
+        return defaultdict(default_color, json.loads(self.get_object_property('itl', 'sensor_colors')))
 
     def get_instruments(self):
-        return json.loads(self.get_list_property('itl', 'instruments'))
+        return list(self.get_mode_sensors().keys())
 
     def get_template_observation(self):
         template_path = os.path.abspath(os.path.join(__file__, '..', 'template_observation.json'))

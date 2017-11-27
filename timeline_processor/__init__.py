@@ -104,15 +104,16 @@ class TimelineProcessor:
         observations = OrderedDict()
         for instrument in self.instruments:
             observations[instrument] = OrderedDict()
+            instrument_sensors = mode_sensors[instrument]
             relevant_entries = [e for e in parsed_lines if e.instrument_name == instrument]
             # Initially all sensors are assumed to be off
             current_sensor = None
             for e in relevant_entries:
                 if current_sensor is None:
                     # If the mode is in config_file, we turn it on
-                    if e.mode in mode_sensors:
+                    if e.mode in instrument_sensors:
                         start_time = e.utc_timestamp
-                        current_sensor = mode_sensors[e.mode]
+                        current_sensor = instrument_sensors[e.mode]
                     else:
                         continue
                 else:
@@ -124,8 +125,8 @@ class TimelineProcessor:
                     # Append observation to list for this sensor
                     observations[instrument][current_sensor].append((start_time, end_time))
                     # If next mode is in config file, we immediately start new observation
-                    if e.mode in mode_sensors:
-                        current_sensor = mode_sensors[e.mode]
+                    if e.mode in instrument_sensors:
+                        current_sensor = instrument_sensors[e.mode]
                         start_time = e.utc_timestamp
                     # Otherwise, turn sensor off
                     else:
@@ -204,12 +205,17 @@ class TimelineProcessor:
         with open(output_bat_file_path, 'w+') as f:
             # the string specifies the location and camera orientation next to JUICE, you can get a similar
             # string URL by pressing Ctrl+U in Cosmographia
+            # frame=bfix (means body fixed frame around selected target)
+            # jd: start time in mean julian days
+            # x,y,z,qw,qx,qy,qz: position and orientation of camera, easiest to get using Ctrl+U
+            # ts: time step, it is speed of time in Cosmographia when it starts
+            # fov: width of field of view in degrees, 50 is a good number
             file_contents = \
                 'Cosmographia ^\n' +\
                 '{} ^\n'.format(os.path.join(output_dir_short_path, os.path.basename(require_json_path))) +\
                 '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.025933&y=0.016843&z=-0.075476'.format(
                     start_time_jd) +\
-                '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=1&fov=50"\n\n'
+                '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=400&fov=50"\n\n'
             f.write(file_contents)
 
     def _get_jd_time(self, timestamp):
