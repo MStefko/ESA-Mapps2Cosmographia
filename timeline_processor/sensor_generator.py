@@ -2,6 +2,7 @@ import os
 from collections import OrderedDict
 import simplejson as json
 
+
 class SensorGenerator:
     def __init__(self, juice_config):
         self.juice_config = juice_config

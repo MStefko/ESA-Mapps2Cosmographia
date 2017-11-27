@@ -6,15 +6,16 @@ import time
 from PyQt5 import uic, QtCore, QtWidgets
 from PyQt5.QtCore import QThread
 
+
 def generation_task(gui):
-    # type: () -> None
+    # type: () -> Tuple[int, str, str]
     """ Generates the scenario from inputs.
     First, parse all file names. Then, use MEX2KER to convert MAPPS attitude into
     a CK kernel. Generate a scenario using the MAPPS timeline, and put all necessary
     include files into the folder.
     """
     try:
-        gui._parse_instrument_checkboxes()
+        gui.parse_instrument_checkboxes()
         target_name = gui.form.comboBox_targetList.currentText()
         gui.juice_config.set_selected_target(target_name)
 
@@ -43,7 +44,7 @@ def generation_task(gui):
             scenario_file, new_folder_name, ck_file_name)
         print("Generating scenario file: {}".format(new_scenario_file_path))
         gui.timeline_processor.process_scenario(target_name, timeline_file,
-                                                 new_scenario_file_path)
+                                                new_scenario_file_path)
         print("Finished.")
     except Exception as e:
         msg = (1, traceback.format_exc(0) + "\nSee console for more details.", "")
@@ -51,6 +52,7 @@ def generation_task(gui):
     else:
         msg = (0, 'Scenario file generated at:\n\n{}'.format(new_scenario_file_path), new_scenario_file_path)
     return msg
+
 
 class TaskRunner(QThread):
     """

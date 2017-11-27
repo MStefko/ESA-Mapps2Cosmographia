@@ -24,5 +24,6 @@ def suite():
 def main():
     unittest.TextTestRunner(verbosity=1).run(suite())
 
+
 if __name__ == '__main__':
     main()

@@ -43,12 +43,12 @@ class MappsReader:
                         tq = MappsTimedQuaternion(fields[2], fields[3], fields[4], fields[5], fields[6])
                         self.quaternions.append(tq)
                     except:
-                        raise ValueError('Error processing %s (ln: %d)<br><br>%s' % (os.path.basename(str(filename)), nlines, MappsReader.EXPECTED_MSG))
+                        raise ValueError('Error processing %s (ln: %d)<br><br>%s' %
+                                         (os.path.basename(str(filename)),
+                                         nlines, MappsReader.EXPECTED_MSG))
 
-                nlines +=1
+                nlines += 1
             print("  Lines read: {}".format(nlines))
-
-
 
 
 class MocExporter:
@@ -71,7 +71,7 @@ class MocExporter:
         block_st = quaternion_list[0].get_time()
         block_et = quaternion_list[-1].get_time()
 
-        block =  os.linesep + 'META_START' + os.linesep
+        block = os.linesep + 'META_START' + os.linesep
         block += ('OBJECT_NAME          = %s' + os.linesep) % self.object_name
         block += ('OBJECT_ID            = %d' + os.linesep) % self.object_id
         block += 'REF_FRAME            = EME2000' + os.linesep
@@ -93,7 +93,7 @@ class MocExporter:
         fd.write(self.export_moc_header())
         total = len(self.quaternions)
         for i in range(0, total, MocExporter.BLOCK_SIZE):
-            block = self.export_moc_block(self.quaternions[i : min(i + MocExporter.BLOCK_SIZE, total)])
+            block = self.export_moc_block(self.quaternions[i:min(i + MocExporter.BLOCK_SIZE, total)])
             fd.write(block)
 
     def export_setup(self, fd):
@@ -104,7 +104,8 @@ class MocExporter:
         fd.write("INTERPOLATION_METHOD = 'LAGRANGE'" + os.linesep)
         fd.write("NOMINAL_SCLK_RATE    = 0.152587890625D-4" + os.linesep)
         fd.write("APPEND_TO_OUTPUT     = 'NO'" + os.linesep)
-        fd.write(("STRING_MAPPING       = ( 'EME2000', 'J2000', '%s', '%s'  )" + os.linesep) % (self.object_name, self.object_name))
+        fd.write(("STRING_MAPPING       = ( 'EME2000', 'J2000', '%s', '%s'  )" + os.linesep) %
+                 (self.object_name, self.object_name))
         fd.write(("NAIF_BODY_NAME       = '%s'" + os.linesep) % self.object_name)
         fd.write(("NAIF_BODY_CODE       = -%d000" + os.linesep) % self.object_id)
         fd.write("\\begintext" + os.linesep)
@@ -171,7 +172,7 @@ class JuiceMex2Ker(Mex2Ker):
         tls_path = 'naif0011.tls'
         tsc_path = 'juice_fict_20160326.tsc'
 
-        if _platform  == "win32":
+        if _platform == "win32":
             tls_path = 'naif0011.tls.win'
             tsc_path = 'juice_fict_20160326.tsc.win'
 

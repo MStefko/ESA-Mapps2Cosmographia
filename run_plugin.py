@@ -16,11 +16,15 @@ else:
 juice_config = JuiceConfig(juice_plugin_path)
 
 app = QApplication(sys.argv)
+# noinspection PyArgumentList
 window = QDialog()
 window.setWindowTitle("JUICE Plugin4Win")
 
+
 def windowCloseEvent(event):
     sys.exit()
+
+
 window.closeEvent = windowCloseEvent
 
 ui = MappsConverter(window, juice_config)

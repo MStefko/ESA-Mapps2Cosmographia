@@ -10,7 +10,7 @@ from timeline_processor.sensor_generator import SensorGenerator
 
 
 class TimelineProcessor:
-    def __init__(self, juice_config, instruments = None, observation_lifetime_s = 600):
+    def __init__(self, juice_config, instruments=None, observation_lifetime_s=600):
         # type: (JuiceConfig, list, int) -> None
         """
 
@@ -44,7 +44,7 @@ class TimelineProcessor:
         self._generate_bat_file(observations, new_require_json_path)
 
     def set_instruments(self, instrument_list):
-        # type: (list) -> None
+        # type: (list[str]) -> None
         """
         :param instrument_list: List of instruments to parse, i.e. ["JANUS", "MAJIS"]
         """
@@ -56,12 +56,12 @@ class TimelineProcessor:
         :param lifetime: Time after observation end for which the ground track
             is still shown. [seconds]
         """
-        if lifetime<0:
+        if lifetime < 0:
             raise ValueError("Negative observation lifetime.")
         self.observation_lifetime_seconds = lifetime
 
     def _parse_experiment_modes(self, f):
-        # type: (file) -> list
+        # type: (file) -> list[Entry]
         """
 
         :param f: File handle of MAPPS Timeline Dump .asc file
@@ -88,11 +88,11 @@ class TimelineProcessor:
             utc_timestamp = datetime.strptime(line[0:20], "%d-%b-%Y_%H:%M:%S")
             instrument_name = line[36:46].rstrip()
             mode = line[74:91].rstrip()
-            parsed_lines.append( Entry(utc_timestamp, instrument_name, mode) )
+            parsed_lines.append(Entry(utc_timestamp, instrument_name, mode))
         return parsed_lines
 
     def _process_parsed_lines_into_observations(self, parsed_lines):
-        # type: (list) -> OrderedDict
+        # type: (list[Entry]) -> OrderedDict
         """ Processes parsed lines into a nested dictionary, which for each instrument and
         each sensor contains a list of (start, end) times for individial observations.
 
@@ -122,7 +122,7 @@ class TimelineProcessor:
                     if current_sensor not in observations[instrument]:
                         observations[instrument][current_sensor] = []
                     # Append observation to list for this sensor
-                    observations[instrument][current_sensor].append( (start_time, end_time) )
+                    observations[instrument][current_sensor].append((start_time, end_time))
                     # If next mode is in config file, we immediately start new observation
                     if e.mode in mode_sensors:
                         current_sensor = mode_sensors[e.mode]
@@ -149,14 +149,14 @@ class TimelineProcessor:
         with open(require_json_path) as json_file:
             require_json = json.load(json_file)
 
-        os.makedirs(os.path.abspath(os.path.join(output_folder_path,'observations')))
+        os.makedirs(os.path.abspath(os.path.join(output_folder_path, 'observations')))
 
         # Iterate over each sensor
         for instrument_name, sensor_dict in observations.items():
             for sensor_name, observation_list in sensor_dict.items():
                 # sensor JSON needs to be added to the require_json
                 sensor_json_path = "sensors/sensor_{}_{}.json".format(sensor_name, target_name)
-                if not sensor_json_path in require_json["require"]:
+                if sensor_json_path not in require_json["require"]:
                     require_json["require"].append(sensor_json_path)
                 # afterwards, we generate and add all individual observation .json files
                 for idx, times in enumerate(observation_list):
@@ -176,8 +176,8 @@ class TimelineProcessor:
                     edit_entry["geometry"]["groups"].append(d)
                     edit_entry["geometry"]["footprintColor"] = self.juice_config.get_sensor_colors()[instrument_name]
                     edit_entry["geometry"]["sensor"] = sensor_name
-                    with open(os.path.abspath(os.path.join(output_folder_path,'observations',
-                            file_name)), 'w+') as outfile:
+                    with open(os.path.abspath(os.path.join(output_folder_path, 'observations',
+                                                           file_name)), 'w+') as outfile:
                         json.dump(observation, outfile, indent=2)
                     # add corresponding entry to require_json
                     require_json["require"].append("observations/{}".format(file_name))
@@ -199,7 +199,7 @@ class TimelineProcessor:
         dt = self._find_first_start_time(observations)
         start_time_jd = self._get_jd_time(dt)
         output_dir_path = os.path.abspath(os.path.dirname(require_json_path))
-        output_dir_short_path = os.path.join("JUICE",os.path.basename(output_dir_path))
+        output_dir_short_path = os.path.join("JUICE", os.path.basename(output_dir_path))
         output_bat_file_path = os.path.abspath(os.path.join(output_dir_path, bat_file_name))
         with open(output_bat_file_path, 'w+') as f:
             # the string specifies the location and camera orientation next to JUICE, you can get a similar
@@ -207,7 +207,8 @@ class TimelineProcessor:
             file_contents = \
                 'Cosmographia ^\n' +\
                 '{} ^\n'.format(os.path.join(output_dir_short_path, os.path.basename(require_json_path))) +\
-                '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.025933&y=0.016843&z=-0.075476'.format(start_time_jd) +\
+                '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.025933&y=0.016843&z=-0.075476'.format(
+                    start_time_jd) +\
                 '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=1&fov=50"\n\n'
             f.write(file_contents)
 
@@ -236,8 +237,6 @@ class TimelineProcessor:
                 for observation in observation_list:
                     times.append(observation[0])
         return min(times, key=lambda s: calendar.timegm(s.utctimetuple()))
-
-
 
     def _ftime(self, time):
         # type: (datetime) -> str

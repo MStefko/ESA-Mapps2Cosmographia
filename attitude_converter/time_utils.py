@@ -1,6 +1,7 @@
 from __future__ import print_function
 from datetime import datetime, timedelta, tzinfo
 
+
 class UTC(tzinfo):
     """UTC"""
     ZERO = timedelta(0)
@@ -66,7 +67,9 @@ class MappsTime:
     def __init__(self, mapps_utc_str):
         self.mapps_utc_str = mapps_utc_str[0:-1] + ' UTC'
         self.utc_tznoaware = datetime.strptime(self.mapps_utc_str, MappsTime.mapps_pattern)
-        self.utc = datetime(self.utc_tznoaware.year, self.utc_tznoaware.month, self.utc_tznoaware.day, self.utc_tznoaware.hour, self.utc_tznoaware.minute, self.utc_tznoaware.second, tzinfo=UTC())
+        self.utc = datetime(self.utc_tznoaware.year, self.utc_tznoaware.month,
+                            self.utc_tznoaware.day, self.utc_tznoaware.hour, self.utc_tznoaware.minute,
+                            self.utc_tznoaware.second, tzinfo=UTC())
         self.tdb = self.utc + timedelta(seconds=32 + self.leap_seconds(self.utc), milliseconds=184)
 
     def utc_str(self):
@@ -87,7 +90,6 @@ class MappsTime:
         return MappsTime(utc_str_ntz + 'Z')
 
 
-
 if __name__ == '__main__':
     t = MappsTime('2013-02-13T00:00:00Z')
     print(t.utc_str())
@@ -103,3 +105,4 @@ if __name__ == '__main__':
     print(t.utc_str())
     print(t.tdb_str())
     print(t.tdb2_str())
+

@@ -3,6 +3,7 @@ from __future__ import print_function
 from attitude_converter.attitude_provider import MappsReader, JuiceMex2Ker
 
 
+# noinspection PyClassHasNoInit
 class AttitudeConverter:
     def convert(self, mapps_attitude_path, output_ck_path):
         # type: (str, str) -> None
@@ -17,3 +18,4 @@ class AttitudeConverter:
         print(" Running Mex2Ker.")
         bc2ck = JuiceMex2Ker()
         bc2ck.convert(quats, output_ck_path)
+

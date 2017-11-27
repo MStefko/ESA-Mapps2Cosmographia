@@ -73,10 +73,10 @@ class MappsConverter(QWidget):
             else:
                 item.setCheckState(Qt.Unchecked)
             # insert in 0-th column
-            table.setItem(idx,0,item)
+            table.setItem(idx, 0, item)
             self.instrument_checkboxes[name] = item
 
-    def _parse_instrument_checkboxes(self):
+    def parse_instrument_checkboxes(self):
         # type: () -> None
         """ Retrieves check values from GUI and informs the timeline processor and config. """
         checked_instruments = []
@@ -96,7 +96,8 @@ class MappsConverter(QWidget):
              
     def browse_timeline(self):
         last_selection = os.path.dirname(self.juice_config.get_last_timeline_folder())
-        f = QFileDialog.getOpenFileName(self, "Open Mapps Timeline File", last_selection, "MAPPS timeline files (*.asc *.txt)")
+        f = QFileDialog.getOpenFileName(self, "Open Mapps Timeline File", last_selection,
+                                        "MAPPS timeline files (*.asc *.txt)")
         if f:
             file_name = str(f[0])
             self.juice_config.set_last_timeline_folder(file_name)
@@ -104,7 +105,8 @@ class MappsConverter(QWidget):
              
     def browse_scenario(self):
         last_selection = os.path.dirname(self.juice_config.get_last_scenario_folder())
-        f = QFileDialog.getOpenFileName(self, "Open Cosmographia Scenario File", last_selection, "Cosmographia scenario files (*.json)")
+        f = QFileDialog.getOpenFileName(self, "Open Cosmographia Scenario File", last_selection,
+                                        "Cosmographia scenario files (*.json)")
         if f:
             file_name = str(f[0])
             self.juice_config.set_last_scenario_folder(file_name)
@@ -119,8 +121,8 @@ class MappsConverter(QWidget):
         # if we have an error, display error message
         if scenario_error_message[0]:
             response = QMessageBox.warning(self, "Scenario file location warning",
-                    scenario_error_message[1], QMessageBox.Ok | QMessageBox.Abort,
-                    QMessageBox.Ok)
+                scenario_error_message[1], QMessageBox.Ok | QMessageBox.Abort,
+                QMessageBox.Ok)
             # also disable generation of bat file because it wouldn't work
             self.execute_bat_script = False
             if response == QMessageBox.Abort:
@@ -132,6 +134,7 @@ class MappsConverter(QWidget):
         self.busy_widget.show()
 
     def _verify_scenario_file_location(self):
+        # type: () -> Tuple[int, str]
         """ Verifies whether the run_scenario.bat file will work, based on location
         of the original scenario JSON (which should be in
         <cosmographia_root>/JUICE/scenarios/), and whether <cosmographia_root> is
@@ -149,20 +152,20 @@ class MappsConverter(QWidget):
         error_message = (0, "")
         windows_paths = [os.path.abspath(s.strip('"')) for s in os.getenv("Path").split(';')]
         if not (os.path.exists(os.path.join(cosmographia_folder_path, 'Cosmographia.exe'))
-                and juice_folder_name=="JUICE"
-                and scenario_folder_name=="scenarios"):
+                and juice_folder_name == "JUICE"
+                and scenario_folder_name == "scenarios"):
             error_message = (1,
                 "Scenario file is not placed in folder '<cosmographia_root_folder>\\JUICE\\scenarios\\'. "
                 "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
         elif os.path.abspath(cosmographia_folder_path) not in windows_paths:
             error_message = (2,
-                "Cosmographia root folder '{}' not found in Windows PATH environment variable.".format(cosmographia_folder_path.strip("\\")) +\
+                "Cosmographia root folder '{}' not found in Windows PATH environment variable.".format(
+                    cosmographia_folder_path.strip("\\")) +
                 "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
         return error_message
 
-
     def set_exit_message(self, msg):
-        # type: (tuple) -> None
+        # type: (Tuple[int, str]) -> None
         """ Stores exit message from TaskRunner thread for later display.
 
         :param msg: Message received by TaskRunner thread in format
@@ -177,9 +180,9 @@ class MappsConverter(QWidget):
         self.busy_widget.loading_stop()
         self.task_runner.quit()
         # if we had an error, display it
-        if self.exit_message[0]!=0:
+        if self.exit_message[0] != 0:
             response = QMessageBox.warning(self, "Error", self.exit_message[1],
-                                      QMessageBox.Ok, QMessageBox.Ok)
+                                           QMessageBox.Ok, QMessageBox.Ok)
             return
         # otherwise display dialog box based on .bat file status
         else:
