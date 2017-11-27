@@ -116,10 +116,12 @@ class MappsConverter(QWidget):
         """
         self.execute_bat_script = True
         scenario_error_message = self._verify_scenario_file_location()
+        # if we have an error, display error message
         if scenario_error_message[0]:
             response = QMessageBox.warning(self, "Scenario file location warning",
                     scenario_error_message[1], QMessageBox.Ok | QMessageBox.Abort,
                     QMessageBox.Ok)
+            # also disable generation of bat file because it wouldn't work
             self.execute_bat_script = False
             if response == QMessageBox.Abort:
                 return
@@ -130,6 +132,16 @@ class MappsConverter(QWidget):
         self.busy_widget.show()
 
     def _verify_scenario_file_location(self):
+        """ Verifies whether the run_scenario.bat file will work, based on location
+        of the original scenario JSON (which should be in
+        <cosmographia_root>/JUICE/scenarios/), and whether <cosmographia_root> is
+        in the system's PATH environment variable.
+
+        :return: tuple in format (exit_code, exit_message)
+            exit code: 0 - all good
+                       1 - scenario file has wrong location
+                       2 - cosmographia folder not in PATH
+        """
         scenario_file_path = self.form.le_Scenario.text()
         scenario_folder_path, scenario_file = os.path.split(scenario_file_path)
         juice_folder_path, scenario_folder_name = os.path.split(scenario_folder_path)
@@ -160,19 +172,22 @@ class MappsConverter(QWidget):
 
     def loading_stop(self):
         """ Stops all threads and displays the last TaskRunner exit message.
-        If exit message of thread was successful, also exits the program.
+        Prompts the user for input based on the error code of exit message
         """
         self.busy_widget.loading_stop()
         self.task_runner.quit()
+        # if we had an error, display it
         if self.exit_message[0]!=0:
-
             response = QMessageBox.warning(self, "Error", self.exit_message[1],
                                       QMessageBox.Ok, QMessageBox.Ok)
+            return
+        # otherwise display dialog box based on .bat file status
         else:
             box = QMessageBox()
             box.setIcon(QMessageBox.Information)
             box.setWindowTitle("Success")
             box.setText(self.exit_message[1])
+            # 3 options: launch cosmographia | exit script | do nothing
             if self.execute_bat_script:
                 box.setStandardButtons(QMessageBox.Ok | QMessageBox.Ignore |
                                        QMessageBox.Cancel)
@@ -192,6 +207,7 @@ class MappsConverter(QWidget):
                     sys.exit(0)
                 else:
                     return
+            # 2 options: exit script | do nothing
             else:
                 box.setStandardButtons(QMessageBox.Ignore |
                                        QMessageBox.Cancel)

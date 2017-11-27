@@ -191,13 +191,13 @@ class TimelineProcessor:
         """ Generates .bat file that can launch Cosmographia already with the scenario loaded
         with camera following JUICE, and at time of beginning of first parsed obsevation.
 
-        :param observations: Observation dictionary
+        :param observations: Observation dictionary, used to determine start time
         :param require_json_path: Path to observation base .json file
         :return:
         """
         bat_file_name = "run_scenario.bat"
         dt = self._find_first_start_time(observations)
-        jd = self._get_jd_time(dt)
+        start_time_jd = self._get_jd_time(dt)
         output_dir_path = os.path.abspath(os.path.dirname(require_json_path))
         output_dir_short_path = os.path.join("JUICE",os.path.basename(output_dir_path))
         output_bat_file_path = os.path.abspath(os.path.join(output_dir_path, bat_file_name))
@@ -207,7 +207,7 @@ class TimelineProcessor:
             file_contents = \
                 'Cosmographia ^\n' +\
                 '{} ^\n'.format(os.path.join(output_dir_short_path, os.path.basename(require_json_path))) +\
-                '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.025933&y=0.016843&z=-0.075476'.format(jd) +\
+                '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.025933&y=0.016843&z=-0.075476'.format(start_time_jd) +\
                 '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=1&fov=50"\n\n'
             f.write(file_contents)
 
