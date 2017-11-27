@@ -1,4 +1,5 @@
 import calendar
+import traceback
 from collections import namedtuple, OrderedDict
 from datetime import datetime, timedelta
 from config import JuiceConfig
@@ -242,7 +243,11 @@ class TimelineProcessor:
             for sensor_name, observation_list in sensor_dict.items():
                 for observation in observation_list:
                     times.append(observation[0])
-        return min(times, key=lambda s: calendar.timegm(s.utctimetuple()))
+        try:
+            return min(times, key=lambda s: calendar.timegm(s.utctimetuple()))
+        except ValueError:
+            traceback.print_exc()
+            return datetime.now()
 
     def _ftime(self, time):
         # type: (datetime) -> str
