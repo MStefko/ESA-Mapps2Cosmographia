@@ -68,12 +68,13 @@ a JUICE Cosmographia scenario without any observations (i.e. only to display JUI
 This file should reside in `<cosmographia_root>/JUICE/scenarios/` folder if you followed kernel installation
 instructions correctly.
 
-- You can customize which instrument operations will be displayed using the checkboxes.
-- `Target body` specifies which body is used to display instrument ground tracks. For moon flybys,
+ 
+ - You can customize which instrument operations will be displayed using the checkboxes.
+ - `Target body` specifies which body is used to display instrument ground tracks. For moon flybys,
 use the appropriate moon.
-- `Observation decay time [min]` specifies time duration for which 
-the ground track of an observation
-is still displayed, after the observation's end time.
+ - `Observation decay time [min]` specifies time duration for which 
+ the ground track of an observation
+ is still displayed, after the observation's end time.
 
 To generate a scenario, click `Generate files!`. A `<cosmographia_root/JUICE/mapps_output_yyyymmdd_HHMMSS/`
 folder will be created. Inside this folder all necessary files are stored. The original
@@ -101,11 +102,11 @@ sensor FOV is associated with each mode. Each entry has the format `"instrument_
 sensor FOVs and ground tracks.
 
 ## Issues
-
-- Plugin doesn't support multiple instruments having the same name for a mode (e.g. two instruments can't
-have a mode with the same name, such as `SCIENCE_20pct`.
+- Please report any issues to [Marcel Stefko](mailto:marcel.stefko@esa.int)
 
 ## Troubleshooting
-- Script runs fine, but Cosmographia displays `Error loading kernel: <kernel path>...`
+- Script runs fine, but Cosmographia displays `Error loading kernel: <kernel path>...`?
     - Make sure that the `PATH_VALUES` variable in the given kernel is correctly set.
 
+## Acknowledgements
+- This script is based on Rafael Andres' JUICE plugin for Linux and Mac.

@@ -315,8 +315,7 @@ img {
 Latest kernels can be downloaded <a href="ftp://spiftp.esac.esa.int/data/SPICE/JUICE/">here</a>. Remember to change the
   <code>PATH_VALUES</code> entry in the metakernels to correct path, e.g. <code>'&lt;cosmographia_root&gt;\JUICE\kernels'</code>
 <ul>
-<li><code>&lt;cosmographia_root&gt;</code> is the folder in which your <code>Cosmographia.exe</code> is located, e.g. <code>C:\cosmographia-3.0\</code>. This folder
-should also be included in your system's <code>PATH</code> environment variable (this is done automatically
+<li><code>&lt;cosmographia_root&gt;</code> is the folder in which your <code>Cosmographia.exe</code> is located, e.g. <code>C:\cosmographia-3.0</code>. This folder should also be included in your system's <code>PATH</code> environment variable (this is done automatically
 when Cosmographia is installed, if you get a warning about the <code>PATH</code> variable while using this program,
 this <a href="https://www.google.nl/search?q=how+to+add+folder+to+path+windows">google search</a> might help you fix
 the issue).</li>
@@ -359,8 +358,8 @@ instructions correctly.</p>
 <li><code>Target body</code> specifies which body is used to display instrument ground tracks. For moon flybys,
 use the appropriate moon.</li>
 <li><code>Observation decay time [min]</code> specifies time duration for which 
-the ground track of an observation
-is still displayed, after the observation's end time.</li>
+ the ground track of an observation
+ is still displayed, after the observation's end time.</li>
 </ol>
 <p>To generate a scenario, click <code>Generate files!</code>. A <code>&lt;cosmographia_root/JUICE/mapps_output_yyyymmdd_HHMMSS/</code>
 folder will be created. Inside this folder all necessary files are stored. The original
@@ -385,17 +384,20 @@ sensor FOV is associated with each mode. Each entry has the format <code>&quot;i
 sensor FOVs and ground tracks.</p>
 <h2>Issues</h2>
 <ul>
-<li>Plugin doesn't support multiple instruments having the same name for a mode (e.g. two instruments can't
-have a mode with the same name, such as <code>SCIENCE_20pct</code>.</li>
+<li>Please report any issues to <a href="&#109;&#x61;&#x69;&#108;&#116;&#x6f;&#58;&#109;&#x61;r&#x63;&#101;&#x6c;.s&#x74;&#x65;&#102;&#107;&#x6f;&#64;e&#x73;&#97;&#46;&#105;&#110;&#116;">&#x4d;&#97;&#x72;&#99;&#x65;&#x6c;&#32;&#83;t&#x65;&#x66;k&#x6f;</a></li>
 </ul>
 <h2>Troubleshooting</h2>
 <ul>
 <li>
-Script runs fine, but Cosmographia displays <code>Error loading kernel: &lt;kernel path&gt;...</code>
+Script runs fine, but Cosmographia displays <code>Error loading kernel: &lt;kernel path&gt;...</code>?
 <ul>
 <li>Make sure that the <code>PATH_VALUES</code> variable in the given kernel is correctly set.</li>
 </ul>
 </li>
+</ul>
+<h2>Acknowledgements</h2>
+<ul>
+<li>This script is based on Rafael Andres' JUICE plugin for Linux and Mac.</li>
 </ul>
 
 </body>
