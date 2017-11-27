@@ -134,6 +134,14 @@ class MappsConverter(QWidget):
         self.task_runner.start()
         self.busy_widget.show()
 
+    def _verify_file_existence(self):
+        attitude_file = self.form.le_MappsAttitude.text()
+        scenario_file = self.form.le_Scenario.text()
+        timeline_file = self.form.le_MappsTimeline.text()
+        for path in [attitude_file, scenario_file, timeline_file]:
+            if not os.path.exists(path):
+                raise ValueError("File: '{}' not found!".format(path))
+
     def _verify_scenario_file_location(self):
         # type: () -> Tuple[int, str]
         """ Verifies whether the run_scenario.bat file will work, based on location
