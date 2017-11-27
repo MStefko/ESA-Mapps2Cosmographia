@@ -46,10 +46,10 @@ def generation_task(gui):
                                                  new_scenario_file_path)
         print("Finished.")
     except Exception as e:
-        msg = traceback.format_exc(0) + "\nSee console for more details."
+        msg = (1, traceback.format_exc(0) + "\nSee console for more details.", "")
         traceback.print_exc()
     else:
-        msg = 'Success: Scenario file generated at:\n\n{}'.format(new_scenario_file_path)
+        msg = (0, 'Scenario file generated at:\n\n{}'.format(new_scenario_file_path), new_scenario_file_path)
     return msg
 
 class TaskRunner(QThread):

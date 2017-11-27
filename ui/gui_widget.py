@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import sys
 from collections import OrderedDict
@@ -23,7 +24,8 @@ class MappsConverter(QWidget):
         :param juice_config: JuiceConfig file
         """
         super(MappsConverter, self).__init__(parent)
-        self.exit_message = "No exit message."
+        self.exit_message = (0, "No exit message.")
+        self.execute_bat_script = False
         self.juice_config = juice_config
         self.attitude_converter = AttitudeConverter()
         self.scenario_processor = ScenarioProcessor(juice_config)
@@ -112,17 +114,47 @@ class MappsConverter(QWidget):
         """ Create the Working... mesage window, connect required thread signals together
         and start the TaskRunner thread.
         """
+        self.execute_bat_script = True
+        scenario_error_message = self._verify_scenario_file_location()
+        if scenario_error_message[0]:
+            response = QMessageBox.warning(self, "Scenario file location warning",
+                    scenario_error_message[1], QMessageBox.Ok | QMessageBox.Abort,
+                    QMessageBox.Ok)
+            self.execute_bat_script = False
+            if response == QMessageBox.Abort:
+                return
         self.task_runner = TaskRunner(self)
         self.busy_widget = WorkingMessage("Working")
         self.task_runner.finished.connect(self.loading_stop)
         self.task_runner.start()
         self.busy_widget.show()
 
+    def _verify_scenario_file_location(self):
+        scenario_file_path = self.form.le_Scenario.text()
+        scenario_folder_path, scenario_file = os.path.split(scenario_file_path)
+        juice_folder_path, scenario_folder_name = os.path.split(scenario_folder_path)
+        cosmographia_folder_path, juice_folder_name = os.path.split(juice_folder_path)
+        error_message = (0, "")
+        windows_paths = [os.path.abspath(s.strip('"')) for s in os.getenv("Path").split(';')]
+        if not (os.path.exists(os.path.join(cosmographia_folder_path, 'Cosmographia.exe'))
+                and juice_folder_name=="JUICE"
+                and scenario_folder_name=="scenarios"):
+            error_message = (1,
+                "Scenario file is not placed in folder '<cosmographia_root_folder>\\JUICE\\scenarios\\'. "
+                "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
+        elif os.path.abspath(cosmographia_folder_path) not in windows_paths:
+            error_message = (2,
+                "Cosmographia root folder '{}' not found in Windows PATH environment variable.".format(cosmographia_folder_path.strip("\\")) +\
+                "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
+        return error_message
+
+
     def set_exit_message(self, msg):
-        # type: (str) -> None
+        # type: (tuple) -> None
         """ Stores exit message from TaskRunner thread for later display.
 
-        :param msg: Message received by TaskRunner thread
+        :param msg: Message received by TaskRunner thread in format
+        (exit_code, message)
         """
         self.exit_message = msg
 
@@ -132,9 +164,43 @@ class MappsConverter(QWidget):
         """
         self.busy_widget.loading_stop()
         self.task_runner.quit()
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText(self.exit_message)
-        msg.exec_()
-        if self.exit_message.startswith("Success"):
-            sys.exit()
+        if self.exit_message[0]!=0:
+
+            response = QMessageBox.warning(self, "Error", self.exit_message[1],
+                                      QMessageBox.Ok, QMessageBox.Ok)
+        else:
+            box = QMessageBox()
+            box.setIcon(QMessageBox.Information)
+            box.setWindowTitle("Success")
+            box.setText(self.exit_message[1])
+            if self.execute_bat_script:
+                box.setStandardButtons(QMessageBox.Ok | QMessageBox.Ignore |
+                                       QMessageBox.Cancel)
+                b_launch = box.button(QMessageBox.Ok)
+                b_launch.setText('Close program and launch scenario')
+                b_close = box.button(QMessageBox.Ignore)
+                b_close.setText('Close program')
+                b_donothing = box.button(QMessageBox.Cancel)
+                b_donothing.setText('Do nothing')
+                box.exec_()
+                if box.clickedButton() == b_launch:
+                    # Launch cosmographia
+                    os.chdir(os.path.dirname(self.exit_message[2]))
+                    os.startfile('run_scenario.bat')
+                    sys.exit(0)
+                elif box.clickedButton() == b_close:
+                    sys.exit(0)
+                else:
+                    return
+            else:
+                box.setStandardButtons(QMessageBox.Ignore |
+                                       QMessageBox.Cancel)
+                b_close = box.button(QMessageBox.Ignore)
+                b_close.setText('Close program')
+                b_donothing = box.button(QMessageBox.Cancel)
+                b_donothing.setText('Do nothing')
+                box.exec_()
+                if box.clickedButton() == b_close:
+                    sys.exit(0)
+                else:
+                    return
