@@ -2,19 +2,24 @@ from __future__ import print_function
 import os
 import traceback
 import time
+from typing import Tuple, TYPE_CHECKING
+# workaround to make type checking work with circular imports
+if TYPE_CHECKING:
+    from ui.gui_widget import MappsConverter
 
-from PyQt5 import uic, QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QThread
 
 from ui.working import Ui_Dialog
 
-
-def generation_task(gui):
-    # type: () -> Tuple[int, str, str]
+def generation_task(gui: 'MappsConverter') -> Tuple[int, str, str]:
     """ Generates the scenario from inputs.
     First, parse all file names. Then, use MEX2KER to convert MAPPS attitude into
     a CK kernel. Generate a scenario using the MAPPS timeline, and put all necessary
     include files into the folder.
+
+    :param gui: Instance of main GUI
+    :return: Return 3-tuple in format (exit_code, message, scenario_file_path)
     """
     try:
         gui.parse_instrument_checkboxes()
@@ -60,7 +65,7 @@ class TaskRunner(QThread):
     """
     Thread that actually executes the generation_task
     """
-    def __init__(self, gui):
+    def __init__(self, gui: 'MappsConverter'):
         super(TaskRunner, self).__init__()
         self.gui = gui
 
@@ -70,12 +75,12 @@ class TaskRunner(QThread):
         msg = generation_task(self.gui)
         self.dump_msg(msg)
 
-    def dump_msg(self, msg):
+    def dump_msg(self, msg: Tuple[int, str, str]):
         self.gui.set_exit_message(msg)
 
 
 class WorkingMessage(QtWidgets.QDialog):
-    def __init__(self, msg='Working ', parent=None):
+    def __init__(self, msg: str = 'Working ', parent = None):
         super(WorkingMessage, self).__init__(parent)
         self.dialog = Ui_Dialog()
         self.dialog.setupUi(self)

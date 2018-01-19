@@ -21,7 +21,7 @@ class MappsTime:
     mapps_pattern = '%Y-%m-%dT%H:%M:%S %Z'
     moc_pattern = '%Y-%m-%dT%H:%M:%S'
 
-    def leap_seconds(self, date):
+    def leap_seconds(self, date: datetime) -> int:
         leapsecond_dates = [
             datetime(1972, 1, 1, 0, 0, 0, 0, UTC()),
             datetime(1972, 7, 1, 0, 0, 0, 0, UTC()),
@@ -64,7 +64,7 @@ class MappsTime:
 
         return 10 + search
 
-    def __init__(self, mapps_utc_str):
+    def __init__(self, mapps_utc_str: str):
         self.mapps_utc_str = mapps_utc_str[0:-1] + ' UTC'
         self.utc_tznoaware = datetime.strptime(self.mapps_utc_str, MappsTime.mapps_pattern)
         self.utc = datetime(self.utc_tznoaware.year, self.utc_tznoaware.month,
@@ -72,21 +72,21 @@ class MappsTime:
                             self.utc_tznoaware.second, tzinfo=UTC())
         self.tdb = self.utc + timedelta(seconds=32 + self.leap_seconds(self.utc), milliseconds=184)
 
-    def utc_str(self):
+    def utc_str(self) -> str:
         return self.utc.strftime(MappsTime.mapps_pattern)
 
-    def tdb_str(self):
+    def tdb_str(self) -> str:
         return self.tdb.strftime(MappsTime.moc_pattern)
 
-    def utc_tz_aware(self, utc):
+    def utc_tz_aware(self, utc: datetime) -> datetime:
         return datetime(utc.year, utc.month, utc.day, utc.hour, utc.minute, utc.second, tzinfo=UTC())
 
     @staticmethod
-    def from_datetime(dt):
+    def from_datetime(dt: datetime) -> 'MappsTime':
         return MappsTime(dt.strftime(MappsTime.moc_pattern) + 'Z')
 
     @staticmethod
-    def from_bepi(utc_str_ntz):
+    def from_bepi(utc_str_ntz: str) -> 'MappsTime':
         return MappsTime(utc_str_ntz + 'Z')
 
 

@@ -2,23 +2,25 @@ import calendar
 import traceback
 from collections import namedtuple, OrderedDict
 from datetime import datetime, timedelta
+from typing import List
+
 from config import Config
 import simplejson as json
 import os
 import jdcal
+import io
 
 from timeline_processor.sensor_generator import SensorGenerator
 
+Entry = namedtuple('Entry', ['utc_timestamp', 'instrument_name', 'mode'])
 
 class TimelineProcessor:
-    def __init__(self, juice_config, instruments=None, observation_lifetime_s=600):
-        # type: (Config, list, int) -> None
+    def __init__(self, juice_config: Config, instruments: list = None, observation_lifetime_s: int = 600):
         """
 
         :param instruments: List of instruments to parse, i.e. ["JANUS", "MAJIS"]
         :param observation_lifetime_s: Time after observation end for which the ground track
             is still shown.
-        :type juice_config: Config file
         """
         self.juice_config = juice_config
         self.parsed_timeline = None
@@ -27,8 +29,8 @@ class TimelineProcessor:
         self.set_observation_lifetime_seconds(observation_lifetime_s)
         self.sensor_generator = SensorGenerator(juice_config)
 
-    def process_scenario(self, target_name, timeline_file_path, new_require_json_path, custom_start_time = None):
-        # type: (str, str, str, str, datetime) -> None
+    def process_scenario(self, target_name: str, timeline_file_path: str, new_require_json_path: str,
+                         custom_start_time: datetime = None) -> None:
         """ Parses scenario file from MAPPS timeline .asc file, and inserts the required
         sensors and observations into scenario JSON file.
 
@@ -45,15 +47,13 @@ class TimelineProcessor:
         self._generate_observation_files(observations, target_name, new_require_json_path)
         self._generate_bat_file(observations, new_require_json_path, custom_start_time)
 
-    def set_instruments(self, instrument_list):
-        # type: (List[str]) -> None
+    def set_instruments(self, instrument_list: List[str]) -> None:
         """
         :param instrument_list: List of instruments to parse, i.e. ["JANUS", "MAJIS"]
         """
         self.instruments = instrument_list
 
-    def set_observation_lifetime_seconds(self, lifetime):
-        # type: (int) -> None
+    def set_observation_lifetime_seconds(self, lifetime: int) -> None:
         """
         :param lifetime: Time after observation end for which the ground track
             is still shown. [seconds]
@@ -62,8 +62,7 @@ class TimelineProcessor:
             raise ValueError("Negative observation lifetime.")
         self.observation_lifetime_seconds = lifetime
 
-    def _parse_experiment_modes(self, f):
-        # type: (file) -> List[Entry]
+    def _parse_experiment_modes(self, f: io.IOBase):
         """
 
         :param f: File handle of MAPPS Timeline Dump .asc file
@@ -81,7 +80,6 @@ class TimelineProcessor:
 
         # We are at beginning of our section
         parsed_lines = []
-        Entry = namedtuple('Entry', ['utc_timestamp', 'instrument_name', 'mode'])
         for line in f:
             # break at line that only has newline character
             if len(line) < 2:
@@ -93,8 +91,7 @@ class TimelineProcessor:
             parsed_lines.append(Entry(utc_timestamp, instrument_name, mode))
         return parsed_lines
 
-    def _process_parsed_lines_into_observations(self, parsed_lines):
-        # type: (List[Entry]) -> OrderedDict
+    def _process_parsed_lines_into_observations(self, parsed_lines: List[Entry]) -> OrderedDict:
         """ Processes parsed lines into a nested dictionary, which for each instrument and
         each sensor contains a list of (start, end) times for individial observations.
 
@@ -110,6 +107,7 @@ class TimelineProcessor:
             relevant_entries = [e for e in parsed_lines if e.instrument_name == instrument]
             # Initially all sensors are assumed to be off
             current_sensor = None
+            start_time = None
             for e in relevant_entries:
                 if current_sensor is None:
                     # If the mode is in config_file, we turn it on
@@ -138,9 +136,8 @@ class TimelineProcessor:
                 del observations[instrument]
         return observations
 
-    def _generate_observation_files(self, observations, target_name,
-                                    require_json_path):
-        # type: (OrderedDict, str, str, str) -> None
+    def _generate_observation_files(self, observations: OrderedDict, target_name: str,
+                                    require_json_path: str) -> None:
         """ Generates and saves observation .json files from parsed observations.
 
         :param observations: OrderedDict[instrument_name, OrderedDict[sensor_name, list[(start_time, end_time)]]]
@@ -189,8 +186,8 @@ class TimelineProcessor:
             json.dump(require_json, json_file, indent=2)
         return
 
-    def _generate_bat_file(self, observations, require_json_path, start_time_override = None):
-        # type: (OrderedDict, str, datetime) -> None
+    def _generate_bat_file(self, observations: OrderedDict, require_json_path: str,
+                           start_time_override: datetime = None) -> None:
         """ Generates .bat file that can launch Cosmographia already with the scenario loaded
         with camera following JUICE, and at time of beginning of first parsed obsevation,
         or at defined start time.
@@ -226,8 +223,7 @@ class TimelineProcessor:
                 '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"\n\n'
             f.write(file_contents)
 
-    def _get_jd_time(self, timestamp):
-        # type: (datetime) -> float
+    def _get_jd_time(self, timestamp: datetime) -> float:
         """ Calculate MJD time from a timestamp.
 
         :param timestamp: Time to convert
@@ -238,8 +234,7 @@ class TimelineProcessor:
                   timestamp.second/(24.0*60*60)])
         return jd
 
-    def _find_first_start_time(self, observations):
-        # type: (OrderedDict) -> datetime
+    def _find_first_start_time(self, observations: OrderedDict) -> datetime:
         """ Finds the earliest start time of an observation.
 
         :param observations: Observation dictionary
@@ -256,8 +251,7 @@ class TimelineProcessor:
             traceback.print_exc()
             return datetime.now()
 
-    def _ftime(self, time):
-        # type: (datetime) -> str
+    def _ftime(self, time: datetime) -> str:
         """ Formats timestamp into a Cosmographia-compatible format.
 
         :param time: Timestamp to be formatted
@@ -265,8 +259,7 @@ class TimelineProcessor:
         """
         return time.strftime("%Y-%m-%d %H:%M:%S.000 UTC")
 
-    def _delay_observation_end_time(self, time):
-        # type: (datetime) -> datetime
+    def _delay_observation_end_time(self, time: datetime) -> datetime:
         """ Delays the timestamp by amount defined by self.observation_lifetime_seconds.
 
         :param time: Timestamp to be delayed

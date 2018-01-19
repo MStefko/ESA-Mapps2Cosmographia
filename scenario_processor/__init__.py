@@ -2,13 +2,14 @@ import os
 import simplejson as json
 from collections import OrderedDict
 
+from config import Config
+
 
 class ScenarioProcessor:
-    def __init__(self, juice_config):
+    def __init__(self, juice_config: Config):
         self.juice_config = juice_config
 
-    def process_scenario(self, scenario_file_path, output_folder_name, ck_file_name):
-        # type: (str, str, str) -> str
+    def process_scenario(self, scenario_file_path: str, output_folder_name: str, ck_file_name: str) -> str:
         """ Loads already existing Cosmographia scenario file, inserts the new CK kernel,
         all necessary sensor and observation files, and saves the scenario to output
         folder.
@@ -20,6 +21,7 @@ class ScenarioProcessor:
         """
         root_folder = os.path.abspath(os.path.join(scenario_file_path, '..', '..'))
         kernel_file_path = ""
+        kernel_json = None
         with open(scenario_file_path) as f:
             self.scenario = json.load(f, object_pairs_hook=OrderedDict)
         # this root scenario file can but doesn't have to contain the "spiceKernels" entry

@@ -4,11 +4,11 @@ import sys
 import traceback
 from datetime import datetime
 from collections import OrderedDict
+from typing import Tuple, Union
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
-from attitude_converter import AttitudeConverter
 from config import Config
 from worker_thread import TaskRunner, WorkingMessage
 from ui.juice_win_converter import Ui_Form
@@ -18,8 +18,7 @@ from timeline_processor import TimelineProcessor
 
 class MappsConverter(QWidget):
 
-    def __init__(self, parent, juice_config):
-        # type: (object, Config) -> None
+    def __init__(self, parent: QWidget, juice_config: Config):
         """
 
         :param parent: Parent widget
@@ -29,7 +28,6 @@ class MappsConverter(QWidget):
         self.exit_message = (0, "No exit message.")
         self.execute_bat_script = False
         self.juice_config = juice_config
-        self.attitude_converter = AttitudeConverter()
         self.scenario_processor = ScenarioProcessor(juice_config)
         self.timeline_processor = TimelineProcessor(juice_config)
 
@@ -57,8 +55,7 @@ class MappsConverter(QWidget):
         self.setMinimumSize(self.size())
         self.show()
 
-    def _populate_instrument_table(self):
-        # type: () -> None
+    def _populate_instrument_table(self) -> None:
         # load values from config
         instrument_list = self.juice_config.get_instruments()
         checked_instruments = self.juice_config.get_checked_instruments()
@@ -79,7 +76,7 @@ class MappsConverter(QWidget):
             table.setItem(idx, 0, item)
             self.instrument_checkboxes[name] = item
 
-    def _configure_start_time_entry(self):
+    def _configure_start_time_entry(self) -> None:
         # load values from config
         is_start_time_enabled = self.juice_config.get_is_custom_start_time_enabled()
         start_time = self.juice_config.get_custom_start_time()
@@ -89,9 +86,7 @@ class MappsConverter(QWidget):
             self.form.cb_startTime.setChecked(True)
             self.form.le_StartTime.setEnabled(True)
 
-
-    def parse_instrument_checkboxes(self):
-        # type: () -> None
+    def parse_instrument_checkboxes(self) -> None:
         """ Retrieves check values from GUI and informs the timeline processor and config. """
         checked_instruments = []
         for name, item in self.instrument_checkboxes.items():
@@ -100,12 +95,12 @@ class MappsConverter(QWidget):
         self.juice_config.set_checked_instruments(checked_instruments)
         self.timeline_processor.set_instruments(checked_instruments)
 
-    def start_time_cb_changed(self, value):
+    def start_time_cb_changed(self, _: int) -> None:
         state = self.form.cb_startTime.isChecked()
         self.form.le_StartTime.setEnabled(state)
         self.juice_config.set_is_custom_start_time_enabled(state)
 
-    def browse_attitude(self):
+    def browse_attitude(self) -> None:
         last_selection = os.path.dirname(self.juice_config.get_last_attitude_folder())
         f = QFileDialog.getOpenFileName(self, "Open Mapps Data File", last_selection, "CSV data files (*.csv)")
         if f:
@@ -113,7 +108,7 @@ class MappsConverter(QWidget):
             self.juice_config.set_last_attitude_folder(file_name)
             self.form.le_MappsAttitude.setText(file_name)
              
-    def browse_timeline(self):
+    def browse_timeline(self) -> None:
         last_selection = os.path.dirname(self.juice_config.get_last_timeline_folder())
         f = QFileDialog.getOpenFileName(self, "Open Mapps Timeline File", last_selection,
                                         "MAPPS timeline files (*.asc *.txt)")
@@ -122,7 +117,7 @@ class MappsConverter(QWidget):
             self.juice_config.set_last_timeline_folder(file_name)
             self.form.le_MappsTimeline.setText(file_name)
              
-    def browse_scenario(self):
+    def browse_scenario(self) -> None:
         last_selection = os.path.dirname(self.juice_config.get_last_scenario_folder())
         f = QFileDialog.getOpenFileName(self, "Open Cosmographia Scenario File", last_selection,
                                         "Cosmographia scenario files (*.json)")
@@ -131,7 +126,7 @@ class MappsConverter(QWidget):
             self.juice_config.set_last_scenario_folder(file_name)
             self.form.le_Scenario.setText(file_name)
 
-    def generate(self):
+    def generate(self) -> None:
         """ Create the Working... mesage window, connect required thread signals together
         and start the TaskRunner thread.
         """
@@ -167,7 +162,7 @@ class MappsConverter(QWidget):
         self.task_runner.start()
         self.busy_widget.show()
 
-    def parse_custom_start_time(self):
+    def parse_custom_start_time(self) -> Union[datetime, None]:
         if not self.form.cb_startTime.isChecked():
             return None
         start_time_string = self.form.le_StartTime.text()
@@ -178,7 +173,7 @@ class MappsConverter(QWidget):
         self.juice_config.set_custom_start_time(dt.strftime("%Y-%m-%dT%H:%M:%S"))
         return dt
 
-    def _verify_file_existence(self):
+    def _verify_file_existence(self) -> None:
         attitude_file = self.form.le_MappsAttitude.text()
         scenario_file = self.form.le_Scenario.text()
         timeline_file = self.form.le_MappsTimeline.text()
@@ -186,8 +181,7 @@ class MappsConverter(QWidget):
             if not os.path.exists(path):
                 raise ValueError("File: '{}' not found!".format(path))
 
-    def _verify_scenario_file_location(self):
-        # type: () -> Tuple[int, str]
+    def _verify_scenario_file_location(self) -> Tuple[int, str]:
         """ Verifies whether the run_scenario.bat file will work, based on location
         of the original scenario JSON (which should be in
         <cosmographia_root>/JUICE/scenarios/), and whether <cosmographia_root> is
@@ -219,8 +213,7 @@ class MappsConverter(QWidget):
                 "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
         return error_message
 
-    def set_exit_message(self, msg):
-        # type: (Tuple[int, str]) -> None
+    def set_exit_message(self, msg: Tuple[int, str, str]) -> None:
         """ Stores exit message from TaskRunner thread for later display.
 
         :param msg: Message received by TaskRunner thread in format
@@ -228,7 +221,7 @@ class MappsConverter(QWidget):
         """
         self.exit_message = msg
 
-    def loading_stop(self):
+    def loading_stop(self) -> None:
         """ Stops all threads and displays the last TaskRunner exit message.
         Prompts the user for input based on the error code of exit message
         """
