@@ -13,7 +13,7 @@ so that following conditions are met:
  1. [JUICE datafiles](ftp://spiftp.esac.esa.int/cosmographia/missions/) are placed under `<cosmographia_root>` folder, e.g. `C:\Users\Marcel Stefko\cosmographia-3.0\`.
  2. [JUICE kernels](ftp://spiftp.esac.esa.int/data/SPICE/JUICE/misc/release_notes/juice_ftp_160.txt) are downloaded, with `PATH_VALUES` set correctly in each metakernel.
  3. `spice_JUICE_crema_xxx.json` files in `<cosmographia_root>/JUICE/config/` folder are modified so that the 'spiceKernels' entries point to the corresponding metakernels
- from point 2.
+ from point 2. Backslashes in Windows-style filepaths **must** be escaped, e.g. `C:\\Users\\Marcel Stefko\\SPICE\\kernels\\mk\\juice_crema_3_2_v151.tm`.
 
 ## Installation
 ### As standalone program (EXPERIMENTAL)

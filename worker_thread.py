@@ -6,6 +6,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QThread
 
 from ui.working import Ui_Dialog
+from attitude_converter import convert
 
 from typing import Tuple, TYPE_CHECKING
 # workaround to make type checking work with circular imports
@@ -46,7 +47,7 @@ def generation_task(gui: 'MappsConverter') -> Tuple[int, str, str]:
 
         output_ck_path = os.path.abspath(os.path.join(new_folder_path, ck_file_name))
         print("Generating CK kernel: {}".format(output_ck_path))
-        gui.attitude_converter.convert(attitude_file, output_ck_path)
+        convert(attitude_file, output_ck_path)
 
         new_scenario_file_path = gui.scenario_processor.process_scenario(
             scenario_file, new_folder_name, ck_file_name)

@@ -1,0 +1,11 @@
+- Use QtDesigner to modify the .ui files. It can be found at Anaconda3/Library/bin/designer.exe
+- To compile the .ui files, use the Anaconda console command:
+
+  pyuic5 -o juice_win_converter.py juice_win_converter.ui
+
+  (similarly for working.ui)
+
+- To compile the logo.qrc, use:
+
+  pyrcc5 -o logo_rc.py logo.qrc
+

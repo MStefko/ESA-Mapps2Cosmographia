@@ -220,7 +220,7 @@ class TimelineProcessor:
             file_contents = \
                 'Cosmographia ^\n' + \
                 '{} ^\n'.format(os.path.join(output_dir_short_path, os.path.basename(require_json_path))) + \
-                '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.025933&y=0.016843&z=-0.075476'.format(
+                '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.863936&y=0.561111&z=-2.514421'.format(
                     start_time_jd) + \
                 '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"\n\n'
             f.write(file_contents)

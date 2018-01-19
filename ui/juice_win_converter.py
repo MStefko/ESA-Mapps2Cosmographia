@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import ui.logo_rc
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -80,6 +81,11 @@ class Ui_Form(object):
         self.le_StartTime.setGeometry(QtCore.QRect(332, 310, 171, 31))
         self.le_StartTime.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.le_StartTime.setObjectName("le_StartTime")
+        self.logo = QtWidgets.QLabel(Form)
+        self.logo.setGeometry(QtCore.QRect(580, 310, 141, 111))
+        self.logo.setScaledContents(False)
+        self.logo.setAlignment(QtCore.Qt.AlignCenter)
+        self.logo.setObjectName("logo")
 
         self.retranslateUi(Form)
         self.pb_MappsAttitude.clicked.connect(Form.browse_attitude)
@@ -105,4 +111,6 @@ class Ui_Form(object):
         self.label_6.setText(_translate("Form", "Observation decay time [min]:"))
         self.cb_startTime.setText(_translate("Form", "Custom start time:"))
         self.le_StartTime.setPlaceholderText(_translate("Form", "2031-04-25T22:45:47"))
+        self.logo.setText(_translate("Form", "<html><head/><body><p><img src=\":/img/rsz_juice_insignia.png\"/></p></body></html>"))
+
 

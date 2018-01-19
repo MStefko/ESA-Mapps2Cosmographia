@@ -1,16 +1,14 @@
 # Changelog
 
-## v0.3.0
-
-
+## v1.0
  - Moved to Python3.6, Python2 compatibility removed.
  - Updated setup guide for JUICE SPICE Kernel Dataset v1.6.0
  - Added option to set custom start time.
  - The output folder can now be renamed after creation without breaking functionality.
+ - Minor bugfixes.
 
 
-
-## v0.2.5
+## v0.2
 First tracked release.
 
 ### Features

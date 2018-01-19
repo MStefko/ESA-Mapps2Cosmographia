@@ -1,4 +1,4 @@
-name: j2c
+name: m2c
 dependencies:
 - python=3.6
 - simplejson

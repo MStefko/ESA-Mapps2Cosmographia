@@ -127,7 +127,7 @@ class Config:
     def set_is_custom_start_time_enabled(self, value: bool) -> None:
         if not isinstance(value, bool):
             raise ValueError()
-        self.temp.set('ui', 'is_custom_start_time_enabled', value)
+        self.temp.set('ui', 'is_custom_start_time_enabled', str(value))
 
     def get_custom_start_time(self) -> str:
         return self.temp.get_property('ui', 'custom_start_time')
