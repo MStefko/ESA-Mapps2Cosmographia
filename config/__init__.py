@@ -4,7 +4,7 @@ import datetime
 from collections import OrderedDict, defaultdict
 
 from configparser import ConfigParser
-from typing import Any, List, Tuple
+from typing import Any, List
 
 
 class Config:
@@ -29,11 +29,13 @@ class Config:
                 return "[]"
             return self.get(section, option)
 
-        def get_template_sensor(self) -> OrderedDict:
+        @staticmethod
+        def get_template_sensor() -> OrderedDict:
             template_path = os.path.abspath(os.path.join(__file__, '..', 'template_sensor.json'))
             return json.load(open(template_path), object_pairs_hook=OrderedDict)
 
-        def get_template_observation(self) -> OrderedDict:
+        @staticmethod
+        def get_template_observation() -> OrderedDict:
             template_path = os.path.abspath(os.path.join(__file__, '..', 'template_observation.json'))
             return json.load(open(template_path), object_pairs_hook=OrderedDict)
 
@@ -75,7 +77,6 @@ class Config:
             if not self.has_option(section, option):
                 return ""
             return self.get(section, option)
-
 
     def __init__(self, path: str):
         self.static = Config.StaticConfig(path)

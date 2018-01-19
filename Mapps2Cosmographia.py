@@ -19,8 +19,10 @@ app = QApplication(sys.argv)
 window = QDialog()
 window.setWindowTitle("JUICE - Mapps2Cosmographia")
 
-def window_close_event(event):
+
+def window_close_event(_):
     sys.exit()
+
 
 window.closeEvent = window_close_event
 

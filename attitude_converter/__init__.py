@@ -1,7 +1,7 @@
 from attitude_converter.attitude_provider import MappsReader, JuiceMex2Ker
 
 
-def convert(self, mapps_attitude_path: str, output_ck_path: str) -> None:
+def convert(mapps_attitude_path: str, output_ck_path: str) -> None:
     """
     :param mapps_attitude_path: Path to attitude .csv file containing Quaternions.
     :param output_ck_path: Path to output file to be created by Mex2Ker.

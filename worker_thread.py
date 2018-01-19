@@ -1,15 +1,17 @@
 import os
 import traceback
 import time
-from typing import Tuple, TYPE_CHECKING
-# workaround to make type checking work with circular imports
-if TYPE_CHECKING:
-    from ui.gui_widget import MappsConverter
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QThread
 
 from ui.working import Ui_Dialog
+
+from typing import Tuple, TYPE_CHECKING
+# workaround to make type checking work with circular imports
+if TYPE_CHECKING:
+    from ui.gui_widget import MappsConverter
+
 
 def generation_task(gui: 'MappsConverter') -> Tuple[int, str, str]:
     """ Generates the scenario from inputs.
@@ -79,7 +81,7 @@ class TaskRunner(QThread):
 
 
 class WorkingMessage(QtWidgets.QDialog):
-    def __init__(self, msg: str = 'Working ', parent = None):
+    def __init__(self, msg: str = 'Working ', parent: QtWidgets.QDialog = None):
         super(WorkingMessage, self).__init__(parent)
         self.dialog = Ui_Dialog()
         self.dialog.setupUi(self)

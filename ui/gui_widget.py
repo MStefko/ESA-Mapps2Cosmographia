@@ -133,7 +133,7 @@ class MappsConverter(QWidget):
         try:
             self._verify_file_existence()
             self.parse_custom_start_time()
-        except Exception as e:
+        except Exception as _:
             QMessageBox.warning(
                 self, "File missing!", traceback.format_exc(0),
                 QMessageBox.Ok, QMessageBox.Ok)

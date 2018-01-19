@@ -20,7 +20,8 @@ class MappsTime:
     mapps_pattern = '%Y-%m-%dT%H:%M:%S %Z'
     moc_pattern = '%Y-%m-%dT%H:%M:%S'
 
-    def leap_seconds(self, date: datetime) -> int:
+    @staticmethod
+    def leap_seconds(date: datetime) -> int:
         leapsecond_dates = [
             datetime(1972, 1, 1, 0, 0, 0, 0, UTC()),
             datetime(1972, 7, 1, 0, 0, 0, 0, UTC()),
@@ -77,7 +78,8 @@ class MappsTime:
     def tdb_str(self) -> str:
         return self.tdb.strftime(MappsTime.moc_pattern)
 
-    def utc_tz_aware(self, utc: datetime) -> datetime:
+    @staticmethod
+    def utc_tz_aware(utc: datetime) -> datetime:
         return datetime(utc.year, utc.month, utc.day, utc.hour, utc.minute, utc.second, tzinfo=UTC())
 
     @staticmethod
@@ -103,5 +105,4 @@ if __name__ == '__main__':
     t = MappsTime('2018-02-13T00:00:00Z')
     print(t.utc_str())
     print(t.tdb_str())
-    print(t.tdb2_str())
 

@@ -14,6 +14,7 @@ from timeline_processor.sensor_generator import SensorGenerator
 
 Entry = namedtuple('Entry', ['utc_timestamp', 'instrument_name', 'mode'])
 
+
 class TimelineProcessor:
     def __init__(self, juice_config: Config, instruments: list = None, observation_lifetime_s: int = 600):
         """
@@ -62,7 +63,8 @@ class TimelineProcessor:
             raise ValueError("Negative observation lifetime.")
         self.observation_lifetime_seconds = lifetime
 
-    def _parse_experiment_modes(self, f: io.IOBase):
+    @staticmethod
+    def _parse_experiment_modes(f: io.TextIOBase):
         """
 
         :param f: File handle of MAPPS Timeline Dump .asc file
@@ -203,7 +205,7 @@ class TimelineProcessor:
         dt = start_time_override if start_time_override is not None else self._find_first_start_time(observations)
         # subtract 20 minutes
         td = timedelta(minutes=20)
-        start_time_jd = self._get_jd_time(dt-td)
+        start_time_jd = self._get_jd_time(dt - td)
         output_dir_path = os.path.abspath(os.path.dirname(require_json_path))
         output_dir_short_path = os.path.join("JUICE", os.path.basename(output_dir_path))
         output_bat_file_path = os.path.abspath(os.path.join(output_dir_path, bat_file_name))
@@ -216,25 +218,27 @@ class TimelineProcessor:
             # ts: time step, it is speed of time in Cosmographia when it starts
             # fov: width of field of view in degrees, 50 is a good number
             file_contents = \
-                'Cosmographia ^\n' +\
-                '{} ^\n'.format(os.path.join(output_dir_short_path, os.path.basename(require_json_path))) +\
+                'Cosmographia ^\n' + \
+                '{} ^\n'.format(os.path.join(output_dir_short_path, os.path.basename(require_json_path))) + \
                 '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.025933&y=0.016843&z=-0.075476'.format(
-                    start_time_jd) +\
+                    start_time_jd) + \
                 '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"\n\n'
             f.write(file_contents)
 
-    def _get_jd_time(self, timestamp: datetime) -> float:
+    @staticmethod
+    def _get_jd_time(timestamp: datetime) -> float:
         """ Calculate MJD time from a timestamp.
 
         :param timestamp: Time to convert
         :return: Calculated mjd time.
         """
         jd_midnight = sum(jdcal.gcal2jd(timestamp.year, timestamp.month, timestamp.day))
-        jd = sum([jd_midnight, timestamp.hour/24.0, timestamp.minute/(24.0*60),
-                  timestamp.second/(24.0*60*60)])
+        jd = sum([jd_midnight, timestamp.hour / 24.0, timestamp.minute / (24.0 * 60),
+                  timestamp.second / (24.0 * 60 * 60)])
         return jd
 
-    def _find_first_start_time(self, observations: OrderedDict) -> datetime:
+    @staticmethod
+    def _find_first_start_time(observations: OrderedDict) -> datetime:
         """ Finds the earliest start time of an observation.
 
         :param observations: Observation dictionary
@@ -251,7 +255,8 @@ class TimelineProcessor:
             traceback.print_exc()
             return datetime.now()
 
-    def _ftime(self, time: datetime) -> str:
+    @staticmethod
+    def _ftime(time: datetime) -> str:
         """ Formats timestamp into a Cosmographia-compatible format.
 
         :param time: Timestamp to be formatted

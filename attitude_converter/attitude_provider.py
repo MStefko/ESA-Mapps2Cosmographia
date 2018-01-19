@@ -62,7 +62,8 @@ class MocExporter:
         self.object_id = object_id
         self.creation_date = '2016-10-07T17:00:00'
 
-    def export_moc_header(self):
+    @staticmethod
+    def export_moc_header():
         return 'ESOC_TOS_GFI_ATTITUDE_FILE_VERSION = 1.0' + os.linesep
 
     def export_moc_block(self, quaternion_list):
@@ -109,8 +110,8 @@ class MocExporter:
         self.fd_write(f"\\begintext{os.linesep}", fd)
 
     @staticmethod
-    def fd_write(input: str, fd):
-        fd.write(input.encode())
+    def fd_write(input_string: str, fd):
+        fd.write(input_string.encode())
 
 
 class Mex2Ker:
@@ -145,7 +146,7 @@ class Mex2Ker:
         try:
             os.remove(output_ck_path)
         except OSError:
-            print ('pass')
+            print('pass')
         original_cwd = os.getcwd()
         os.chdir(working_path)
 
