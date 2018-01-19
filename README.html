@@ -293,19 +293,6 @@ img {
 <body>
 <h1>JUICE Cosmographia Conversion Plugin</h1>
 <p>This plugin allows you to import MAPPS data (attitude + instrument operation) as a Cosmographia scenario.</p>
-<h2>Installation</h2>
-<p>This plugin requires <code>python2.7</code> with packages <code>pyqt5</code>, <code>jdcal</code>, and <code>simplejson</code> installed.</p>
-<p>If you use Anaconda, you can install using these steps:</p>
-<ol>
-<li>Open Anaconda prompt, and navigate to root folder of this plugin <code>JUICE_plugin_win</code>.</li>
-<li><code>conda env create</code> (This creates a new environment called <code>juice_plugin</code> with all 
- required packages and correct Python version.)</li>
-<li><code>activate juice_plugin</code> (This activates the newly-created environment.)</li>
-<li><code>python run_plugin.py</code> (The GUI should be displayed now.)</li>
-</ol>
-<p><img src="img/installation.png" /></p>
-<p><strong>Fig 1: Correct installation procedure.</strong></p>
-<p>For subsequent runs, you need to <code>activate juice_plugin</code> environment every time you restart Anaconda prompt.</p>
 <h2>Preparing Cosmographia</h2>
 <p>You need to have <a href="https://www.cosmos.esa.int/web/spice/cosmographia">Spice-enhanced Cosmographia</a> with the appropriate
 <a href="ftp://spiftp.esac.esa.int/cosmographia/missions/">JUICE datafiles</a> correctly installed (see
@@ -335,6 +322,25 @@ Note: As of 27th November 2017, the above Cosmographia SPICE datafiles do not co
 <p><strong>Fig 3: Correct placement of JUICE SPICE folders inside Cosmographia/JUICE directory.</strong></p>
 <p><img src="img/kernels_directory.png" alt="Correct placement of JUICE SPICE kernels inside Cosmographia/JUICE/kernels directory." /></p>
 <p><strong>Fig 4: Correct placement of JUICE SPICE kernels inside Cosmographia/JUICE/kernels directory.</strong></p>
+<h2>Installation</h2>
+<h3>As standalone program (EXPERIMENTAL)</h3>
+<ol>
+<li>Unzip <code>JUICE_plugin_x_x_x_STANDALONE.zip</code> into any directory.</li>
+<li>Run <code>JUICE_plugin.exe</code>.</li>
+</ol>
+<h3>As python script</h3>
+<p>This plugin requires <code>python2.7</code> with packages <code>pyqt5</code>, <code>jdcal</code>, and <code>simplejson</code> installed.</p>
+<p>If you use Anaconda, you can install using these steps:</p>
+<ol>
+<li>Open Anaconda prompt, and navigate to root folder of this plugin <code>JUICE_plugin_win</code>.</li>
+<li><code>conda env create</code> (This creates a new environment called <code>juice_plugin</code> with all 
+ required packages and correct Python version.)</li>
+<li><code>activate juice_plugin</code> (This activates the newly-created environment.)</li>
+<li><code>python run_plugin.py</code> (The GUI should be displayed now.)</li>
+</ol>
+<p><img src="img/installation.png" /></p>
+<p><strong>Fig 1: Correct installation procedure.</strong></p>
+<p>For subsequent runs, you need to <code>activate juice_plugin</code> environment every time you restart Anaconda prompt.</p>
 <h2>Usage</h2>
 <p><img src="img/plugin_gui.png" /></p>
 <p><strong>Fig 5: Main plugin GUI.</strong></p>

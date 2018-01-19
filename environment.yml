@@ -1,6 +1,6 @@
-name: juice_plugin
+name: juice_plugin3
 dependencies:
-- python=2.7
+- python=3
 - simplejson
 - pyqt=5
 - jdcal

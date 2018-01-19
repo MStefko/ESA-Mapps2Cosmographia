@@ -2,7 +2,7 @@ import calendar
 import traceback
 from collections import namedtuple, OrderedDict
 from datetime import datetime, timedelta
-from config import JuiceConfig
+from config import Config
 import simplejson as json
 import os
 import jdcal
@@ -12,13 +12,13 @@ from timeline_processor.sensor_generator import SensorGenerator
 
 class TimelineProcessor:
     def __init__(self, juice_config, instruments=None, observation_lifetime_s=600):
-        # type: (JuiceConfig, list, int) -> None
+        # type: (Config, list, int) -> None
         """
 
         :param instruments: List of instruments to parse, i.e. ["JANUS", "MAJIS"]
         :param observation_lifetime_s: Time after observation end for which the ground track
             is still shown.
-        :type juice_config: JuiceConfig file
+        :type juice_config: Config file
         """
         self.juice_config = juice_config
         self.parsed_timeline = None
@@ -27,14 +27,15 @@ class TimelineProcessor:
         self.set_observation_lifetime_seconds(observation_lifetime_s)
         self.sensor_generator = SensorGenerator(juice_config)
 
-    def process_scenario(self, target_name, timeline_file_path, new_require_json_path):
-        # type: (str, str, str, str) -> None
+    def process_scenario(self, target_name, timeline_file_path, new_require_json_path, custom_start_time = None):
+        # type: (str, str, str, str, datetime) -> None
         """ Parses scenario file from MAPPS timeline .asc file, and inserts the required
         sensors and observations into scenario JSON file.
 
         :param target_name: Name of target body (e.g. "Callisto")
         :param timeline_file_path: Path to MAPPS Timeline Dump .asc file.
         :param new_require_json_path: Path to scenario JSON file in output folder.
+        :param custom_start_time: (optional) Custom start time of scenario.
         """
         output_folder_path = os.path.abspath(os.path.dirname(new_require_json_path))
         with open(timeline_file_path) as f:
@@ -42,7 +43,7 @@ class TimelineProcessor:
         observations = self._process_parsed_lines_into_observations(parsed_lines)
         self.sensor_generator.generate_sensors(observations, target_name, output_folder_path)
         self._generate_observation_files(observations, target_name, new_require_json_path)
-        self._generate_bat_file(observations, new_require_json_path)
+        self._generate_bat_file(observations, new_require_json_path, custom_start_time)
 
     def set_instruments(self, instrument_list):
         # type: (List[str]) -> None
@@ -188,18 +189,24 @@ class TimelineProcessor:
             json.dump(require_json, json_file, indent=2)
         return
 
-    def _generate_bat_file(self, observations, require_json_path):
-        # type: (OrderedDict, str) -> None
+    def _generate_bat_file(self, observations, require_json_path, start_time_override = None):
+        # type: (OrderedDict, str, datetime) -> None
         """ Generates .bat file that can launch Cosmographia already with the scenario loaded
-        with camera following JUICE, and at time of beginning of first parsed obsevation.
+        with camera following JUICE, and at time of beginning of first parsed obsevation,
+        or at defined start time.
+
+        Note: Start time is moved back by 20 minutes due to Cosmographia's fade-in startup.
 
         :param observations: Observation dictionary, used to determine start time
         :param require_json_path: Path to observation base .json file
+        :param start_time_override: (optional) Custom starting time of bat file
         :return:
         """
         bat_file_name = "run_scenario.bat"
-        dt = self._find_first_start_time(observations)
-        start_time_jd = self._get_jd_time(dt)
+        dt = start_time_override if start_time_override is not None else self._find_first_start_time(observations)
+        # subtract 20 minutes
+        td = timedelta(minutes=20)
+        start_time_jd = self._get_jd_time(dt-td)
         output_dir_path = os.path.abspath(os.path.dirname(require_json_path))
         output_dir_short_path = os.path.join("JUICE", os.path.basename(output_dir_path))
         output_bat_file_path = os.path.abspath(os.path.join(output_dir_path, bat_file_name))
@@ -216,7 +223,7 @@ class TimelineProcessor:
                 '{} ^\n'.format(os.path.join(output_dir_short_path, os.path.basename(require_json_path))) +\
                 '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.025933&y=0.016843&z=-0.075476'.format(
                     start_time_jd) +\
-                '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=400&fov=50"\n\n'
+                '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"\n\n'
             f.write(file_contents)
 
     def _get_jd_time(self, timestamp):

@@ -2,13 +2,14 @@ from __future__ import print_function
 import os
 import sys
 import traceback
+from datetime import datetime
 from collections import OrderedDict
 
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
 from attitude_converter import AttitudeConverter
-from config import JuiceConfig
+from config import Config
 from worker_thread import TaskRunner, WorkingMessage
 from ui.juice_win_converter import Ui_Form
 from scenario_processor import ScenarioProcessor
@@ -18,11 +19,11 @@ from timeline_processor import TimelineProcessor
 class MappsConverter(QWidget):
 
     def __init__(self, parent, juice_config):
-        # type: (object, JuiceConfig) -> None
+        # type: (object, Config) -> None
         """
 
         :param parent: Parent widget
-        :param juice_config: JuiceConfig file
+        :param juice_config: Config file
         """
         super(MappsConverter, self).__init__(parent)
         self.exit_message = (0, "No exit message.")
@@ -51,6 +52,7 @@ class MappsConverter(QWidget):
             self.form.comboBox_targetList.setCurrentIndex(index)
 
         self._populate_instrument_table()
+        self._configure_start_time_entry()
         self.setMaximumSize(self.size())
         self.setMinimumSize(self.size())
         self.show()
@@ -77,6 +79,17 @@ class MappsConverter(QWidget):
             table.setItem(idx, 0, item)
             self.instrument_checkboxes[name] = item
 
+    def _configure_start_time_entry(self):
+        # load values from config
+        is_start_time_enabled = self.juice_config.get_is_custom_start_time_enabled()
+        start_time = self.juice_config.get_custom_start_time()
+
+        self.form.le_StartTime.setText(start_time)
+        if is_start_time_enabled:
+            self.form.cb_startTime.setChecked(True)
+            self.form.le_StartTime.setEnabled(True)
+
+
     def parse_instrument_checkboxes(self):
         # type: () -> None
         """ Retrieves check values from GUI and informs the timeline processor and config. """
@@ -86,6 +99,11 @@ class MappsConverter(QWidget):
                 checked_instruments.append(name)
         self.juice_config.set_checked_instruments(checked_instruments)
         self.timeline_processor.set_instruments(checked_instruments)
+
+    def start_time_cb_changed(self, value):
+        state = self.form.cb_startTime.isChecked()
+        self.form.le_StartTime.setEnabled(state)
+        self.juice_config.set_is_custom_start_time_enabled(state)
 
     def browse_attitude(self):
         last_selection = os.path.dirname(self.juice_config.get_last_attitude_folder())
@@ -120,6 +138,7 @@ class MappsConverter(QWidget):
         # verify all three files exist
         try:
             self._verify_file_existence()
+            self.parse_custom_start_time()
         except Exception as e:
             QMessageBox.warning(
                 self, "File missing!", traceback.format_exc(0),
@@ -147,6 +166,17 @@ class MappsConverter(QWidget):
         self.task_runner.finished.connect(self.loading_stop)
         self.task_runner.start()
         self.busy_widget.show()
+
+    def parse_custom_start_time(self):
+        if not self.form.cb_startTime.isChecked():
+            return None
+        start_time_string = self.form.le_StartTime.text()
+        try:
+            dt = datetime.strptime(start_time_string, "%Y-%m-%dT%H:%M:%S")
+        except ValueError:
+            raise ValueError("Error while parsing custom start time. Entry should have format '%YYYY-%MM-%DDT%hh:%mm:%ss'.")
+        self.juice_config.set_custom_start_time(dt.strftime("%Y-%m-%dT%H:%M:%S"))
+        return dt
 
     def _verify_file_existence(self):
         attitude_file = self.form.le_MappsAttitude.text()
@@ -220,7 +250,7 @@ class MappsConverter(QWidget):
                 box.setStandardButtons(QMessageBox.Ok | QMessageBox.Ignore |
                                        QMessageBox.Cancel)
                 b_launch = box.button(QMessageBox.Ok)
-                b_launch.setText('Close program and launch scenario')
+                b_launch.setText('Launch scenario')
                 b_close = box.button(QMessageBox.Ignore)
                 b_close.setText('Close program')
                 b_donothing = box.button(QMessageBox.Cancel)
@@ -230,7 +260,6 @@ class MappsConverter(QWidget):
                     # Launch cosmographia
                     os.chdir(os.path.dirname(self.exit_message[2]))
                     os.startfile('run_scenario.bat')
-                    sys.exit(0)
                 elif box.clickedButton() == b_close:
                     sys.exit(0)
                 else:

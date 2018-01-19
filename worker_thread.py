@@ -6,6 +6,8 @@ import time
 from PyQt5 import uic, QtCore, QtWidgets
 from PyQt5.QtCore import QThread
 
+from ui.working import Ui_Dialog
+
 
 def generation_task(gui):
     # type: () -> Tuple[int, str, str]
@@ -44,7 +46,7 @@ def generation_task(gui):
             scenario_file, new_folder_name, ck_file_name)
         print("Generating scenario file: {}".format(new_scenario_file_path))
         gui.timeline_processor.process_scenario(target_name, timeline_file,
-                                                new_scenario_file_path)
+                                                new_scenario_file_path, gui.parse_custom_start_time())
         print("Finished.")
     except Exception as e:
         msg = (1, traceback.format_exc(0) + "\nSee console for more details.", "")
@@ -75,14 +77,15 @@ class TaskRunner(QThread):
 class WorkingMessage(QtWidgets.QDialog):
     def __init__(self, msg='Working ', parent=None):
         super(WorkingMessage, self).__init__(parent)
-        uic.loadUi('ui\\working.ui', self)
+        self.dialog = Ui_Dialog()
+        self.dialog.setupUi(self)
 
         # Initialize Values
         self.o_msg = msg
         self.msg = msg
         self.val = 0
 
-        self.info_label.setText(msg)
+        self.dialog.info_label.setText(msg)
 
         self.timer = QtCore.QTimer()
         self.timer.setInterval(500)
@@ -94,7 +97,7 @@ class WorkingMessage(QtWidgets.QDialog):
         self.msg += '.'
 
         if self.val < 20:
-            self.info_label.setText(self.msg)
+            self.dialog.info_label.setText(self.msg)
         else:
             self.val = 0
             self.msg = self.o_msg

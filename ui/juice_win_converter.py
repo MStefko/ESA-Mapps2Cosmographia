@@ -8,7 +8,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
@@ -60,25 +59,34 @@ class Ui_Form(object):
         self.label_4.setGeometry(QtCore.QRect(200, 210, 91, 31))
         self.label_4.setObjectName("label_4")
         self.comboBox_targetList = QtWidgets.QComboBox(Form)
-        self.comboBox_targetList.setGeometry(QtCore.QRect(290, 210, 151, 31))
+        self.comboBox_targetList.setGeometry(QtCore.QRect(350, 210, 151, 31))
         self.comboBox_targetList.setObjectName("comboBox_targetList")
         self.label_5 = QtWidgets.QLabel(Form)
         self.label_5.setGeometry(QtCore.QRect(30, 170, 141, 31))
         self.label_5.setAlignment(QtCore.Qt.AlignCenter)
         self.label_5.setObjectName("label_5")
         self.label_6 = QtWidgets.QLabel(Form)
-        self.label_6.setGeometry(QtCore.QRect(200, 270, 151, 31))
+        self.label_6.setGeometry(QtCore.QRect(200, 260, 151, 31))
         self.label_6.setObjectName("label_6")
         self.le_ObsDecayTimeMin = QtWidgets.QLineEdit(Form)
-        self.le_ObsDecayTimeMin.setGeometry(QtCore.QRect(372, 269, 71, 31))
+        self.le_ObsDecayTimeMin.setGeometry(QtCore.QRect(430, 260, 71, 31))
         self.le_ObsDecayTimeMin.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.le_ObsDecayTimeMin.setObjectName("le_ObsDecayTimeMin")
+        self.cb_startTime = QtWidgets.QCheckBox(Form)
+        self.cb_startTime.setGeometry(QtCore.QRect(200, 310, 121, 31))
+        self.cb_startTime.setObjectName("cb_startTime")
+        self.le_StartTime = QtWidgets.QLineEdit(Form)
+        self.le_StartTime.setEnabled(False)
+        self.le_StartTime.setGeometry(QtCore.QRect(332, 310, 171, 31))
+        self.le_StartTime.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.le_StartTime.setObjectName("le_StartTime")
 
         self.retranslateUi(Form)
         self.pb_MappsAttitude.clicked.connect(Form.browse_attitude)
         self.pb_MappsTimeline.clicked.connect(Form.browse_timeline)
         self.pb_Scenario.clicked.connect(Form.browse_scenario)
         self.pb_Generate.clicked.connect(Form.generate)
+        self.cb_startTime.stateChanged['int'].connect(Form.start_time_cb_changed)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
@@ -95,4 +103,6 @@ class Ui_Form(object):
         self.label_4.setText(_translate("Form", "Target body:"))
         self.label_5.setText(_translate("Form", "Instruments"))
         self.label_6.setText(_translate("Form", "Observation decay time [min]:"))
+        self.cb_startTime.setText(_translate("Form", "Custom start time:"))
+        self.le_StartTime.setPlaceholderText(_translate("Form", "2031-04-25T22:45:47"))
 

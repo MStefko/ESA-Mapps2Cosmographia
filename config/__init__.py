@@ -1,3 +1,4 @@
+from __future__ import print_function
 import json
 import os
 import datetime
@@ -12,11 +13,11 @@ else:
     from ConfigParser import ConfigParser
 
 
-class JuiceConfig:
+class Config:
     class StaticConfig(ConfigParser):
         def __init__(self, path):
             ConfigParser.__init__(self)
-            self.file = os.path.join(path, 'juice_plugin_static.ini')
+            self.file = os.path.join(path, 'config_static.ini')
             self.read([self.file])
 
         def get_property(self, section, option):
@@ -62,7 +63,7 @@ class JuiceConfig:
     class TempConfig(ConfigParser):
         def __init__(self, path):
             ConfigParser.__init__(self)
-            self.file = os.path.join(path, 'juice_plugin_temp.ini')
+            self.file = os.path.join(path, 'config_temp.ini')
             self.read([self.file])
             self.set_property('runtime', 'last_use', str(datetime.datetime.utcnow()))
 
@@ -83,8 +84,8 @@ class JuiceConfig:
 
 
     def __init__(self, path):
-        self.static = JuiceConfig.StaticConfig(path)
-        self.temp = JuiceConfig.TempConfig(path)
+        self.static = Config.StaticConfig(path)
+        self.temp = Config.TempConfig(path)
 
     def get_last_scenario_folder(self):
         return self.temp.get_property('folders', 'scenario')
@@ -125,6 +126,20 @@ class JuiceConfig:
     def set_checked_instruments(self, instrument_list):
         self.temp.set_property('ui', 'checked_instruments', ",".join(instrument_list))
 
+    def get_is_custom_start_time_enabled(self):
+        return self.temp.getboolean('ui', 'is_custom_start_time_enabled')
+
+    def set_is_custom_start_time_enabled(self, value):
+        if not isinstance(value, bool):
+            raise ValueError()
+        self.temp.set('ui', 'is_custom_start_time_enabled', value)
+
+    def get_custom_start_time(self):
+        return self.temp.get_property('ui', 'custom_start_time')
+
+    def set_custom_start_time(self, custom_start_time):
+        self.temp.set_property('ui', 'custom_start_time', custom_start_time)
+
     def get_targets(self):
         return self.static.get_targets()
 
@@ -132,7 +147,7 @@ class JuiceConfig:
         return self.temp.get_property('ui', 'selected_target')
 
     def set_selected_target(self, selected_target):
-        return self.temp.set_property('ui', 'selected_target', selected_target)
+        self.temp.set_property('ui', 'selected_target', selected_target)
 
     def get_template_sensor(self):
         return self.static.get_template_sensor()

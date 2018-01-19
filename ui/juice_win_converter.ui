@@ -205,7 +205,7 @@
   <widget class="QComboBox" name="comboBox_targetList">
    <property name="geometry">
     <rect>
-     <x>290</x>
+     <x>350</x>
      <y>210</y>
      <width>151</width>
      <height>31</height>
@@ -232,7 +232,7 @@
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>270</y>
+     <y>260</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -244,14 +244,46 @@
   <widget class="QLineEdit" name="le_ObsDecayTimeMin">
    <property name="geometry">
     <rect>
-     <x>372</x>
-     <y>269</y>
+     <x>430</x>
+     <y>260</y>
      <width>71</width>
      <height>31</height>
     </rect>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="cb_startTime">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>310</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Custom start time:</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="le_StartTime">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>332</x>
+     <y>310</y>
+     <width>171</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="placeholderText">
+    <string>2031-04-25T22:45:47</string>
    </property>
   </widget>
  </widget>
@@ -321,11 +353,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>cb_startTime</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>Form</receiver>
+   <slot>start_time_cb_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>260</x>
+     <y>325</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>221</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>browse_attitude()</slot>
   <slot>browse_timeline()</slot>
   <slot>browse_scenario()</slot>
   <slot>generate()</slot>
+  <slot>start_time_cb_changed(int)</slot>
  </slots>
 </ui>

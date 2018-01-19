@@ -1,23 +1,6 @@
-# JUICE Cosmographia Conversion Plugin 
+# MAPPS to Cosmographia Conversion Plugin
 
-This plugin allows you to import MAPPS data (attitude + instrument operation) as a Cosmographia scenario.
-
-## Installation
-This plugin requires `python2.7` with packages `pyqt5`, `jdcal`, and `simplejson` installed.
-
-If you use Anaconda, you can install using these steps:
-
- 1. Open Anaconda prompt, and navigate to root folder of this plugin `JUICE_plugin_win`.
- 2. `conda env create` (This creates a new environment called `juice_plugin` with all 
- required packages and correct Python version.)
- 3. `activate juice_plugin` (This activates the newly-created environment.)
- 4. `python run_plugin.py` (The GUI should be displayed now.)
- 
-![](img/installation.png)
-
-**Fig 1: Correct installation procedure.**
-
-For subsequent runs, you need to `activate juice_plugin` environment every time you restart Anaconda prompt.
+This plugin allows you to import JUICE MAPPS data (attitude + instrument operation) as a Cosmographia scenario.
 
 ## Preparing Cosmographia
 You need to have [Spice-enhanced Cosmographia](https://www.cosmos.esa.int/web/spice/cosmographia) with the appropriate
@@ -47,6 +30,32 @@ You need to have [Spice-enhanced Cosmographia](https://www.cosmos.esa.int/web/sp
 ![Correct placement of JUICE SPICE kernels inside Cosmographia/JUICE/kernels directory.](img/kernels_directory.png)
 
 **Fig 4: Correct placement of JUICE SPICE kernels inside Cosmographia/JUICE/kernels directory.**
+
+
+
+
+
+## Installation
+### As standalone program (EXPERIMENTAL)
+ 1. Unzip `JUICE_plugin_x_x_x_STANDALONE.zip` into any directory.
+ 2. Run `JUICE_plugin.exe`.
+
+### As python script
+This plugin requires `python2.7` with packages `pyqt5`, `jdcal`, and `simplejson` installed.
+
+If you use Anaconda, you can install using these steps:
+
+ 1. Open Anaconda prompt, and navigate to root folder of this plugin `JUICE_plugin_win`.
+ 2. `conda env create` (This creates a new environment called `juice_plugin` with all 
+ required packages and correct Python version.)
+ 3. `activate juice_plugin` (This activates the newly-created environment.)
+ 4. `python run_plugin.py` (The GUI should be displayed now.)
+ 
+![](img/installation.png)
+
+**Fig 1: Correct installation procedure.**
+
+For subsequent runs, you need to `activate juice_plugin` environment every time you restart Anaconda prompt.
 
 
 ## Usage
@@ -94,7 +103,7 @@ file. You need to set the time of interest and find JUICE manually, using Cosmog
 **Fig 6: Cosmographia with running generated scenario.**
 
 ## Configuration
-Some settings can be adjusted in `juice_plugin_static.ini` in the `[itl]` section (make sure you adhere to the JSON format specification, otherwise errors will occur):
+Some settings can be adjusted in `config_static.ini` in the `[itl]` section (make sure you adhere to the JSON format specification, otherwise errors will occur):
 
 - `mode_sensors`: This dictionary defines which instrument modes are considered "on" states, and which
 sensor FOV is associated with each mode. It is organised by instrument name, where for each instrument you have its own dictionary. Each entry of this dictionary has the format `"instrument_mode": "sensor_fov_name"`.

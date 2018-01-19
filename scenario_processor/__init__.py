@@ -48,7 +48,7 @@ class ScenarioProcessor:
                 raise RuntimeError('Could not find JSON file containing "spiceKernels".')
             # Now we know which file contains the "spiceKernels" entry
             # We add our own kernel to the list
-            kernel_json["spiceKernels"].append("../{}/{}".format(output_folder_name, ck_file_name))
+            kernel_json["spiceKernels"].append("{}".format(ck_file_name))
             # save the new json file into our folder
             with open(os.path.abspath(os.path.join(root_folder, output_folder_name,
                                                    os.path.basename(kernel_file_path))), 'w+') as outfile:
