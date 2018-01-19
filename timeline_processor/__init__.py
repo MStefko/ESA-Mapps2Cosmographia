@@ -74,8 +74,8 @@ class TimelineProcessor:
         # while checking that the third line is filled with ------
         for line in f:
             if line.startswith("Experiment modes:"):
-                f.next(), f.next()
-                if not f.next().startswith("-----"):
+                f.readline(), f.readline()
+                if not f.readline().startswith("-----"):
                     raise ValueError("Error in parsing file. Could not find start of Experiment modes section.")
                 break
 

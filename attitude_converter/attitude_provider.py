@@ -90,25 +90,28 @@ class MocExporter:
         return block
 
     def export_moc(self, fd):
-        fd.write(self.export_moc_header())
+        self.fd_write(self.export_moc_header(), fd)
         total = len(self.quaternions)
         for i in range(0, total, MocExporter.BLOCK_SIZE):
             block = self.export_moc_block(self.quaternions[i:min(i + MocExporter.BLOCK_SIZE, total)])
-            fd.write(block)
+            self.fd_write(block, fd)
 
     def export_setup(self, fd):
-        fd.write("\\begindata\n")
-        fd.write(("LEAPSECONDS_FILE     = '%s'" + os.linesep) % self.leapsecond)
-        fd.write(("SCLK_KERNEL          = '%s'" + os.linesep) % self.sclk)
-        fd.write("INTERPOLATION_DEGREE = 9" + os.linesep)
-        fd.write("INTERPOLATION_METHOD = 'LAGRANGE'" + os.linesep)
-        fd.write("NOMINAL_SCLK_RATE    = 0.152587890625D-4" + os.linesep)
-        fd.write("APPEND_TO_OUTPUT     = 'NO'" + os.linesep)
-        fd.write(("STRING_MAPPING       = ( 'EME2000', 'J2000', '%s', '%s'  )" + os.linesep) %
-                 (self.object_name, self.object_name))
-        fd.write(("NAIF_BODY_NAME       = '%s'" + os.linesep) % self.object_name)
-        fd.write(("NAIF_BODY_CODE       = -%d000" + os.linesep) % self.object_id)
-        fd.write("\\begintext" + os.linesep)
+        self.fd_write("\\begindata\n", fd)
+        self.fd_write(f"LEAPSECONDS_FILE     = '{self.leapsecond}'{os.linesep}", fd)
+        self.fd_write(f"SCLK_KERNEL          = '{self.sclk}'{os.linesep}", fd)
+        self.fd_write(f"INTERPOLATION_DEGREE = 9{os.linesep}", fd)
+        self.fd_write(f"INTERPOLATION_METHOD = 'LAGRANGE'{os.linesep}", fd)
+        self.fd_write(f"NOMINAL_SCLK_RATE    = 0.152587890625D-4{os.linesep}", fd)
+        self.fd_write(f"APPEND_TO_OUTPUT     = 'NO'{os.linesep}", fd)
+        self.fd_write(f"STRING_MAPPING       = ( 'EME2000', 'J2000', '{self.object_name}', '{self.object_name}'  ){os.linesep}", fd)
+        self.fd_write(f"NAIF_BODY_NAME       = '{self.object_name}'{os.linesep}", fd)
+        self.fd_write(f"NAIF_BODY_CODE       = -{self.object_id}000{os.linesep}", fd)
+        self.fd_write(f"\\begintext{os.linesep}", fd)
+
+    @staticmethod
+    def fd_write(input: str, fd):
+        fd.write(input.encode())
 
 
 class Mex2Ker:
