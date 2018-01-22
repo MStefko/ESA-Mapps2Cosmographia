@@ -98,6 +98,8 @@ sensor FOVs and ground tracks.
 ## Troubleshooting
 - Script runs fine, but Cosmographia displays `Error loading kernel: <kernel path>...`?
     - Make sure that the `PATH_VALUES` variable in the given kernel is correctly set.
+- The script doesn't start up correctly.
+    - Check the `config_static.ini` and `config_temp.ini` files, if their content seems corrupted, replace them with original ones from the repository.
 
 ## Acknowledgements
 - This script is based on Rafael Andres' JUICE plugin for Linux and Mac.
