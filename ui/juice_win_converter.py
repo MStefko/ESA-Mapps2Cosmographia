@@ -78,7 +78,7 @@ class Ui_Form(object):
         self.cb_startTime.setObjectName("cb_startTime")
         self.le_StartTime = QtWidgets.QLineEdit(Form)
         self.le_StartTime.setEnabled(False)
-        self.le_StartTime.setGeometry(QtCore.QRect(332, 310, 171, 31))
+        self.le_StartTime.setGeometry(QtCore.QRect(330, 310, 171, 31))
         self.le_StartTime.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.le_StartTime.setObjectName("le_StartTime")
         self.logo = QtWidgets.QLabel(Form)

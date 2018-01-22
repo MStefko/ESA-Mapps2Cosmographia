@@ -5,6 +5,9 @@
 
   (similarly for working.ui)
 
+  After recompiling juice_win_converter.py, you need to manually edit the line "import logo_rc" to "import ui.logo_rc"
+  and move it to the top of the file
+
 - To compile the logo.qrc, use:
 
   pyrcc5 -o logo_rc.py logo.qrc
