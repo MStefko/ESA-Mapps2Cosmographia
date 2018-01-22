@@ -218,11 +218,12 @@ class TimelineProcessor:
             # ts: time step, it is speed of time in Cosmographia when it starts
             # fov: width of field of view in degrees, 50 is a good number
             file_contents = \
-                'Cosmographia ^\n' + \
-                '{} ^\n'.format(os.path.join(output_dir_short_path, os.path.basename(require_json_path))) + \
-                '-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={:.5f}&x=-0.863936&y=0.561111&z=-2.514421'.format(
-                    start_time_jd) + \
-                '&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"\n\n'
+f'''for %%* in (.) do set CurrDirName=%%~nx*
+Cosmographia ^
+JUICE\\%CurrDirName%\\{os.path.basename(require_json_path)} ^
+-u "cosmo:JUICE?select=JUICE&frame=bfix&jd={start_time_jd:.5f}&x=-0.863936&y=0.561111&z=-2.514421&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"
+
+'''
             f.write(file_contents)
 
     @staticmethod

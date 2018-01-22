@@ -63,11 +63,10 @@ class ScenarioProcessor:
                 json.dump(kernel_json, outfile, indent=2)
 
             # replace the entry in the original scenario file with our own spiceKernels JSON
-            scenario_json["require"][kernel_file_id] = "../{}/{}".format(output_folder_name,
-                                                                         os.path.basename(kernel_file_path))
+            scenario_json["require"][kernel_file_id] = "{}".format(os.path.basename(kernel_file_path))
         else:
             # append straight into scenario file
-            scenario_json["spiceKernels"].append("../{}/{}".format(output_folder_name, ck_file_name))
+            scenario_json["spiceKernels"].append("{}".format(ck_file_name))
 
         new_scenario_name = "LOAD_SCENARIO.json"
         # check if we would have a name conflict with kernel file
