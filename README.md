@@ -74,9 +74,9 @@ files are not modified by this script.
 To launch this scenario, there are three options:
 
  1. Launch immediately by selecting `Launch scenario` option in the dialog that appears after
- the scenario is generated (this runs the `run_scenario.bat` script in the output folder). This option will only
- appear if all data files are correctly structured within the `<cosmographia_root>/JUICE` folder.
- 2. Run the `run_scenario.bat` script in the output folder manually. This automatically finds JUICE and sets time of first observation.
+ the scenario is generated (this runs the `run_scenario.bat` (Windows) or `run_scenario.sh` (Unix) script in the output folder). This option will only
+ appear on Windows if all data files are correctly structured within the `<cosmographia_root>/JUICE` folder.
+ 2. Run the `run_scenario.bat` (Windows) or `run_scenario.sh` (Unix) script in the output folder manually. This automatically finds JUICE and sets time of first observation.
  3. Launch Cosmographia, go to `Cosmographia -> File -> Open Catalog...`, and open the `<cosmographia_root/JUICE/mapps_output_yyyymmdd_HHMMSS/LOAD_SCENARIO.json`
 file. You need to set the time of interest and find JUICE manually, using Cosmographia's controls.
 

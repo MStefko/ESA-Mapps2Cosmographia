@@ -196,20 +196,24 @@ class MappsConverter(QWidget):
         juice_folder_path, scenario_folder_name = os.path.split(scenario_folder_path)
         cosmographia_folder_path, juice_folder_name = os.path.split(juice_folder_path)
         error_message = (0, "")
-        windows_paths = [os.path.abspath(s.strip('"')) for s in os.getenv("Path").split(';')]
-        if not (os.path.exists(os.path.join(cosmographia_folder_path, 'Cosmographia.exe'))
-                and juice_folder_name == "JUICE"
-                and scenario_folder_name == "scenarios"):
-            error_message = (
-                1,
-                "Scenario file is not placed in folder '<cosmographia_root_folder>\\JUICE\\scenarios\\'. "
-                "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
-        elif os.path.abspath(cosmographia_folder_path) not in windows_paths:
-            error_message = (
-                2,
-                "Cosmographia root folder '{}' not found in Windows PATH environment variable.".format(
-                    cosmographia_folder_path.strip("\\")) +
-                "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
+        if sys.platform == "win32":
+            windows_paths = [os.path.abspath(s.strip('"')) for s in os.getenv("Path").split(';')]
+            if not (os.path.exists(os.path.join(cosmographia_folder_path, 'Cosmographia.exe'))
+                    and juice_folder_name == "JUICE"
+                    and scenario_folder_name == "scenarios"):
+                error_message = (
+                    1,
+                    "Scenario file is not placed in folder '<cosmographia_root_folder>\\JUICE\\scenarios\\'. "
+                    "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
+            elif os.path.abspath(cosmographia_folder_path) not in windows_paths:
+                error_message = (
+                    2,
+                    "Cosmographia root folder '{}' not found in Windows PATH environment variable.".format(
+                        cosmographia_folder_path.strip("\\")) +
+                    "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
+        else:
+            # Linux directory structure check not implemented.
+            pass
         return error_message
 
     def set_exit_message(self, msg: Tuple[int, str, str]) -> None:
