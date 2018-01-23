@@ -251,7 +251,10 @@ class MappsConverter(QWidget):
                 if box.clickedButton() == b_launch:
                     # Launch cosmographia
                     os.chdir(os.path.dirname(self.exit_message[2]))
-                    os.startfile('run_scenario.bat')
+                    if sys.platform == "win32":
+                        os.startfile('run_scenario.bat')
+                    else:
+                        os.startfile('run_scenario.sh')
                 elif box.clickedButton() == b_close:
                     sys.exit(0)
                 else:

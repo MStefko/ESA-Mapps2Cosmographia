@@ -1,11 +1,9 @@
 import os
 import sys
 
-if sys.platform == "win32":
-    script_path = os.path.abspath(
-        os.path.join(os.path.abspath(__file__), '..'))
-else:
-    raise RuntimeError("Unsupported platform: {}".format(sys.platform))
+
+script_path = os.path.abspath(
+    os.path.join(os.path.abspath(__file__), '..'))
 if sys.version_info < (3, 5):
     raise RuntimeError("Unsupported Python version. Required >=3.5")
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.1
+ - Linux and Mac support
+
 ## v1.0
  - Moved to Python3.6, Python2 compatibility removed.
  - Updated setup guide for JUICE SPICE Kernel Dataset v1.6.0

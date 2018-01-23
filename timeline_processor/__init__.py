@@ -4,6 +4,8 @@ from collections import namedtuple, OrderedDict
 from datetime import datetime, timedelta
 from typing import List
 
+import sys
+
 from config import Config
 import simplejson as json
 import os
@@ -47,6 +49,7 @@ class TimelineProcessor:
         self.sensor_generator.generate_sensors(observations, target_name, output_folder_path)
         self._generate_observation_files(observations, target_name, new_require_json_path)
         self._generate_bat_file(observations, new_require_json_path, custom_start_time)
+        self._generate_bash_file(observations, new_require_json_path, custom_start_time)
 
     def set_instruments(self, instrument_list: List[str]) -> None:
         """
@@ -190,7 +193,7 @@ class TimelineProcessor:
 
     def _generate_bat_file(self, observations: OrderedDict, require_json_path: str,
                            start_time_override: datetime = None) -> None:
-        """ Generates .bat file that can launch Cosmographia already with the scenario loaded
+        """ Generates .bat file (Windows) that can launch Cosmographia already with the scenario loaded
         with camera following JUICE, and at time of beginning of first parsed obsevation,
         or at defined start time.
 
@@ -218,13 +221,60 @@ class TimelineProcessor:
             # ts: time step, it is speed of time in Cosmographia when it starts
             # fov: width of field of view in degrees, 50 is a good number
             file_contents = \
-f'''for %%* in (.) do set CurrDirName=%%~nx*
+f'''REM Generated on platform: {sys.platform}
+
+for %%* in (.) do set CurrDirName=%%~nx*
 Cosmographia ^
 JUICE\\%CurrDirName%\\{os.path.basename(require_json_path)} ^
 -u "cosmo:JUICE?select=JUICE&frame=bfix&jd={start_time_jd:.5f}&x=-0.863936&y=0.561111&z=-2.514421&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"
 
 '''
             f.write(file_contents)
+        return
+
+    def _generate_bash_file(self, observations: OrderedDict, require_json_path: str,
+                           start_time_override: datetime = None) -> None:
+        """ Generates bash file (Mac/Linux) that can launch Cosmographia already with the scenario loaded
+        with camera following JUICE, and at time of beginning of first parsed obsevation,
+        or at defined start time.
+
+        Note: Start time is moved back by 20 minutes due to Cosmographia's fade-in startup.
+
+        :param observations: Observation dictionary, used to determine start time
+        :param require_json_path: Path to observation base .json file
+        :param start_time_override: (optional) Custom starting time of sh file
+        :return:
+        """
+        sh_file_name = "run_scenario.sh"
+        dt = start_time_override if start_time_override is not None else self._find_first_start_time(observations)
+        # subtract 20 minutes
+        td = timedelta(minutes=20)
+        start_time_jd = self._get_jd_time(dt - td)
+        output_dir_path = os.path.abspath(os.path.dirname(require_json_path))
+        output_dir_short_path = os.path.join("JUICE", os.path.basename(output_dir_path))
+        output_sh_file_path = os.path.abspath(os.path.join(output_dir_path, sh_file_name))
+
+        with open(output_sh_file_path, 'w+') as f:
+            # the string specifies the location and camera orientation next to JUICE, you can get a similar
+            # string URL by pressing Ctrl+U in Cosmographia
+            # frame=bfix (means body fixed frame around selected target)
+            # jd: start time in mean julian days
+            # x,y,z,qw,qx,qy,qz: position and orientation of camera, easiest to get using Ctrl+U
+            # ts: time step, it is speed of time in Cosmographia when it starts
+            # fov: width of field of view in degrees, 50 is a good number
+            file_contents = \
+f'''#!/bin/bash
+# Generated on platform: {sys.platform}
+
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+Cosmographia \\
+  "${{DIR}}/{os.path.basename(require_json_path)}" \\
+  -u "cosmo:JUICE?select=JUICE&frame=bfix&jd={start_time_jd:.5f}&x=-0.863936&y=0.561111&z=-2.514421&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"
+
+'''
+            f.write(file_contents)
+        return
 
     @staticmethod
     def _get_jd_time(timestamp: datetime) -> float:
