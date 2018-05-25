@@ -74,6 +74,7 @@ class TimelineProcessor:
         :return: List of parsed lines. Each entry is a namedtuple of format
             (utc_timestamp, instrument_name, mode).
         """
+        parsed_lines = []
         # Find line that starts with "Experiment modes:", then skip 3 lines,
         # while checking that the third line is filled with ------
         for line in f:
@@ -81,19 +82,16 @@ class TimelineProcessor:
                 f.readline(), f.readline()
                 if not f.readline().startswith("-----"):
                     raise ValueError("Error in parsing file. Could not find start of Experiment modes section.")
-                break
-
-        # We are at beginning of our section
-        parsed_lines = []
-        for line in f:
-            # break at line that only has newline character
-            if len(line) < 2:
-                break
-            # parse the required entries on the line
-            utc_timestamp = datetime.strptime(line[0:20], "%d-%b-%Y_%H:%M:%S")
-            instrument_name = line[36:46].rstrip()
-            mode = line[74:91].rstrip()
-            parsed_lines.append(Entry(utc_timestamp, instrument_name, mode))
+                # We are at beginning of our section
+                for line in f:
+                    # break at line that only has newline character
+                    if len(line) < 3:
+                        break
+                    # parse the required entries on the line
+                    utc_timestamp = datetime.strptime(line[0:20], "%d-%b-%Y_%H:%M:%S")
+                    instrument_name = line[36:46].rstrip()
+                    mode = line[74:91].rstrip()
+                    parsed_lines.append(Entry(utc_timestamp, instrument_name, mode))
         return parsed_lines
 
     def _process_parsed_lines_into_observations(self, parsed_lines: List[Entry]) -> OrderedDict:
@@ -223,10 +221,7 @@ class TimelineProcessor:
             file_contents = \
 f'''REM Generated on platform: {sys.platform}
 
-for %%* in (.) do set CurrDirName=%%~nx*
-Cosmographia ^
-JUICE\\%CurrDirName%\\{os.path.basename(require_json_path)} ^
--u "cosmo:JUICE?select=JUICE&frame=bfix&jd={start_time_jd:.5f}&x=-0.863936&y=0.561111&z=-2.514421&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"
+Cosmographia "%cd%\{os.path.basename(require_json_path)}" -u "cosmo:JUICE?select=JUICE&frame=bfix&jd={start_time_jd:.5f}&x=-0.863936&y=0.561111&z=-2.514421&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"
 
 '''
             f.write(file_contents)
@@ -268,9 +263,7 @@ f'''#!/bin/bash
 
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-Cosmographia \\
-  "${{DIR}}/{os.path.basename(require_json_path)}" \\
-  -u "cosmo:JUICE?select=JUICE&frame=bfix&jd={start_time_jd:.5f}&x=-0.863936&y=0.561111&z=-2.514421&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"
+Cosmographia "${{DIR}}/{os.path.basename(require_json_path)}" -u "cosmo:JUICE?select=JUICE&frame=bfix&jd={start_time_jd:.5f}&x=-0.863936&y=0.561111&z=-2.514421&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"
 
 '''
             f.write(file_contents)
