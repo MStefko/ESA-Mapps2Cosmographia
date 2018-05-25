@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>741</width>
-    <height>443</height>
+    <height>551</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -53,7 +53,7 @@
    <property name="geometry">
     <rect>
      <x>620</x>
-     <y>70</y>
+     <y>60</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -66,7 +66,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>70</y>
+     <y>60</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -79,17 +79,17 @@
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>70</y>
+     <y>60</y>
      <width>431</width>
      <height>31</height>
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pb_Scenario">
+  <widget class="QPushButton" name="pb_Metakernel">
    <property name="geometry">
     <rect>
      <x>620</x>
-     <y>120</y>
+     <y>100</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -98,11 +98,11 @@
     <string>Browse</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="le_Scenario">
+  <widget class="QLineEdit" name="le_Metakernel">
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>120</y>
+     <y>100</y>
      <width>431</width>
      <height>31</height>
     </rect>
@@ -112,20 +112,20 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>120</y>
+     <y>100</y>
      <width>151</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>Cosmographia Scenario File:</string>
+    <string>SPICE Metakernel:</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pb_Generate">
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>390</y>
+     <y>500</y>
      <width>181</width>
      <height>31</height>
     </rect>
@@ -138,7 +138,7 @@
    <property name="geometry">
     <rect>
      <x>620</x>
-     <y>400</y>
+     <y>510</y>
      <width>111</width>
      <height>20</height>
     </rect>
@@ -157,9 +157,9 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>210</y>
+     <y>290</y>
      <width>141</width>
-     <height>211</height>
+     <height>241</height>
     </rect>
    </property>
    <property name="showGrid">
@@ -193,7 +193,7 @@
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>210</y>
+     <y>290</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -206,7 +206,7 @@
    <property name="geometry">
     <rect>
      <x>350</x>
-     <y>210</y>
+     <y>290</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -216,7 +216,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>170</y>
+     <y>250</y>
      <width>141</width>
      <height>31</height>
     </rect>
@@ -232,7 +232,7 @@
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>260</y>
+     <y>340</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -245,7 +245,7 @@
    <property name="geometry">
     <rect>
      <x>430</x>
-     <y>260</y>
+     <y>340</y>
      <width>71</width>
      <height>31</height>
     </rect>
@@ -258,7 +258,7 @@
    <property name="geometry">
     <rect>
      <x>200</x>
-     <y>310</y>
+     <y>390</y>
      <width>121</width>
      <height>31</height>
     </rect>
@@ -274,7 +274,7 @@
    <property name="geometry">
     <rect>
      <x>330</x>
-     <y>310</y>
+     <y>390</y>
      <width>171</width>
      <height>31</height>
     </rect>
@@ -290,7 +290,7 @@
    <property name="geometry">
     <rect>
      <x>580</x>
-     <y>310</y>
+     <y>420</y>
      <width>141</width>
      <height>111</height>
     </rect>
@@ -303,6 +303,84 @@
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>150</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Output folder path:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pb_OutputFolderPath">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>150</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Browse</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="le_OutputFolderPath">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>150</y>
+     <width>431</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string> </string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="le_OutputFolderName">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>190</y>
+     <width>431</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>190</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Output folder name:</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="cb_solarPanels">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>440</y>
+     <width>151</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Solar panel rotation</string>
    </property>
   </widget>
  </widget>
@@ -343,7 +421,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pb_Scenario</sender>
+   <sender>pb_Metakernel</sender>
    <signal>clicked()</signal>
    <receiver>Form</receiver>
    <slot>browse_scenario()</slot>
@@ -390,6 +468,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pb_OutputFolderPath</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>browse_output_folder()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>670</x>
+     <y>195</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>244</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>browse_attitude()</slot>
@@ -397,5 +491,6 @@
   <slot>browse_scenario()</slot>
   <slot>generate()</slot>
   <slot>start_time_cb_changed(int)</slot>
+  <slot>browse_output_folder()</slot>
  </slots>
 </ui>

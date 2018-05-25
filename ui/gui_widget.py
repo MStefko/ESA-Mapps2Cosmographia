@@ -36,8 +36,12 @@ class MappsConverter(QWidget):
         self.form.l_version.setText(juice_config.get_version())
         self.form.le_MappsAttitude.setText(self.juice_config.get_last_attitude_folder())
         self.form.le_MappsTimeline.setText(self.juice_config.get_last_timeline_folder())
-        self.form.le_Scenario.setText(self.juice_config.get_last_scenario_folder())
+        self.form.le_Metakernel.setText(self.juice_config.get_last_scenario_folder())
+        self.form.le_OutputFolderPath.setText(self.juice_config.get_last_output_path())
+        self.form.le_OutputFolderName.setText(self.juice_config.get_last_output_folder())
         self.form.le_ObsDecayTimeMin.setText(str(self.juice_config.get_observation_lifetime()))
+
+        self.form.cb_solarPanels.setChecked(self.juice_config.get_is_solar_panel_rotation_enabled())
 
         # populate target combobox
         self.form.comboBox_targetList.clear()
@@ -118,12 +122,21 @@ class MappsConverter(QWidget):
              
     def browse_scenario(self) -> None:
         last_selection = os.path.dirname(self.juice_config.get_last_scenario_folder())
-        f = QFileDialog.getOpenFileName(self, "Open Cosmographia Scenario File", last_selection,
-                                        "Cosmographia scenario files (*.json)")
+        f = QFileDialog.getOpenFileName(self, "Open SPICE Metakernel", last_selection,
+                                        "Metakernel files (*.mk);;All files (*)")
         if f:
             file_name = str(f[0])
             self.juice_config.set_last_scenario_folder(file_name)
-            self.form.le_Scenario.setText(file_name)
+            self.form.le_Metakernel.setText(file_name)
+
+    def browse_output_folder(self) -> None:
+        last_selection = os.path.dirname(self.juice_config.get_last_output_path())
+        f = QFileDialog.getExistingDirectory(self, "Choose output parent folder",
+                                             last_selection, QFileDialog.ShowDirsOnly)
+        if f:
+            file_name = str(f)
+            self.juice_config.set_last_output_path(file_name)
+            self.form.le_OutputFolderPath.setText(file_name)
 
     def generate(self) -> None:
         """ Create the Working... mesage window, connect required thread signals together
@@ -174,11 +187,14 @@ class MappsConverter(QWidget):
 
     def _verify_file_existence(self) -> None:
         attitude_file = self.form.le_MappsAttitude.text()
-        scenario_file = self.form.le_Scenario.text()
+        scenario_file = self.form.le_Metakernel.text()
         timeline_file = self.form.le_MappsTimeline.text()
-        for path in [attitude_file, scenario_file, timeline_file]:
+        output_path = self.form.le_OutputFolderPath.text()
+        for path in [attitude_file, scenario_file, timeline_file, output_path]:
             if not os.path.exists(path):
                 raise ValueError("File: '{}' not found!".format(path))
+        if not os.path.isdir(output_path):
+            raise ValueError("Output folder path '{}' must point to a folder".format(output_path))
 
     def _verify_scenario_file_location(self) -> Tuple[int, str]:
         """ Verifies whether the run_scenario.bat file will work, based on location
@@ -191,7 +207,7 @@ class MappsConverter(QWidget):
                        1 - scenario file has wrong location
                        2 - cosmographia folder not in PATH
         """
-        scenario_file_path = self.form.le_Scenario.text()
+        scenario_file_path = self.form.le_Metakernel.text()
         scenario_folder_path, scenario_file = os.path.split(scenario_file_path)
         juice_folder_path, scenario_folder_name = os.path.split(scenario_folder_path)
         cosmographia_folder_path, juice_folder_name = os.path.split(juice_folder_path)

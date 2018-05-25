@@ -4,6 +4,9 @@ from collections import namedtuple, OrderedDict
 from datetime import datetime, timedelta
 from typing import List
 
+from attitude_converter.solar_panel_processor import SolarPanelProcessor
+import spiceypy as spy
+
 import sys
 
 from config import Config
@@ -33,7 +36,8 @@ class TimelineProcessor:
         self.sensor_generator = SensorGenerator(juice_config)
 
     def process_scenario(self, target_name: str, timeline_file_path: str, new_require_json_path: str,
-                         custom_start_time: datetime = None) -> None:
+                         custom_start_time: datetime = None, generate_solar_panels = False,
+                         metakernel_file_path = None, ck_file_path = None) -> None:
         """ Parses scenario file from MAPPS timeline .asc file, and inserts the required
         sensors and observations into scenario JSON file.
 
@@ -50,6 +54,11 @@ class TimelineProcessor:
         self._generate_observation_files(observations, target_name, new_require_json_path)
         self._generate_bat_file(observations, new_require_json_path, custom_start_time)
         self._generate_bash_file(observations, new_require_json_path, custom_start_time)
+        if generate_solar_panels:
+            if metakernel_file_path is None or ck_file_path is None:
+                raise ValueError("Specify both metakernel and ck file path!")
+            self._generate_solar_panel_kernel(observations, metakernel_file_path, ck_file_path,
+                                              output_folder_path)
 
     def set_instruments(self, instrument_list: List[str]) -> None:
         """
@@ -189,6 +198,23 @@ class TimelineProcessor:
             json.dump(require_json, json_file, indent=2)
         return
 
+    def _generate_solar_panel_kernel(self, observations, metakernel_file_path, ck_file_path,
+                                     output_folder_path,
+                                     extra_time_hours: float = 24, step_size_s: float = 20):
+        spp = SolarPanelProcessor("JUICE")
+        spy.furnsh(metakernel_file_path)
+        spy.furnsh(ck_file_path)
+
+        td = timedelta(hours=extra_time_hours)
+
+        start_time = self._find_first_start_time(observations) - td
+        end_time = self._find_last_end_time(observations) + td
+
+        spp.create_panel_ck(start_time, end_time, step_size_s,
+                            os.path.abspath(os.path.join(output_folder_path, 'spacecraft', 'solar_panel_kernel.ck')))
+        spy.unload(ck_file_path)
+        spy.unload(metakernel_file_path)
+
     def _generate_bat_file(self, observations: OrderedDict, require_json_path: str,
                            start_time_override: datetime = None) -> None:
         """ Generates .bat file (Windows) that can launch Cosmographia already with the scenario loaded
@@ -295,6 +321,24 @@ Cosmographia "${{DIR}}/{os.path.basename(require_json_path)}" -u "cosmo:JUICE?se
                     times.append(observation[0])
         try:
             return min(times, key=lambda s: calendar.timegm(s.utctimetuple()))
+        except ValueError:
+            traceback.print_exc()
+            return datetime.now()
+
+    @staticmethod
+    def _find_last_end_time(observations: OrderedDict) -> datetime:
+        """ Finds the latest end time of an observation.
+
+        :param observations: Observation dictionary
+        :return:
+        """
+        times = []
+        for instrument_name, sensor_dict in observations.items():
+            for sensor_name, observation_list in sensor_dict.items():
+                for observation in observation_list:
+                    times.append(observation[1])
+        try:
+            return max(times, key=lambda s: calendar.timegm(s.utctimetuple()))
         except ValueError:
             traceback.print_exc()
             return datetime.now()

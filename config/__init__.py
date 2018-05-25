@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import datetime
 from collections import OrderedDict, defaultdict
 
@@ -38,6 +39,25 @@ class Config:
         def get_template_observation() -> OrderedDict:
             template_path = os.path.abspath(os.path.join(__file__, '..', 'template_observation.json'))
             return json.load(open(template_path), object_pairs_hook=OrderedDict)
+
+        @staticmethod
+        def get_template_scenario() -> OrderedDict:
+            template_path = os.path.abspath(os.path.join(__file__, '..', 'template_scenario.json'))
+            return json.load(open(template_path), object_pairs_hook=OrderedDict)
+
+        @staticmethod
+        def create_spacecraft_folder_only(base_scenario_folder_path: str) -> str:
+            template_folder_path = os.path.abspath(os.path.join(__file__, '..', 'template_folders',
+                                                                'spacecraft_only'))
+            output_folder_path = os.path.abspath(os.path.join(base_scenario_folder_path, 'spacecraft'))
+            return shutil.copytree(template_folder_path, output_folder_path)
+
+        @staticmethod
+        def create_spacecraft_folder_with_solar_panels(base_scenario_folder_path: str) -> str:
+            template_folder_path = os.path.abspath(os.path.join(__file__, '..', 'template_folders',
+                                                                'with_solar_panels'))
+            output_folder_path = os.path.abspath(os.path.join(base_scenario_folder_path, 'spacecraft'))
+            return shutil.copytree(template_folder_path, output_folder_path)
 
         def get_mode_sensors(self) -> OrderedDict:
             return json.loads(self.get_object_property('itl', 'mode_sensors'), object_pairs_hook=OrderedDict)
@@ -100,6 +120,18 @@ class Config:
     def set_last_timeline_folder(self, value: str) -> None:
         self.temp.set_property('folders', 'timeline', value)
 
+    def get_last_output_path(self) -> str:
+        return self.temp.get_property('folders', 'output_path')
+
+    def set_last_output_path(self, value: str) -> None:
+        self.temp.set_property('folders', 'output_path', value)
+
+    def get_last_output_folder(self) -> str:
+        return self.temp.get_property('folders', 'output_folder')
+
+    def set_last_output_folder(self, value: str) -> None:
+        self.temp.set_property('folders', 'output_folder', value)
+
     def get_last_evt_folder(self) -> str:
         return self.temp.get_property('folders', 'evt')
 
@@ -129,6 +161,14 @@ class Config:
             raise ValueError()
         self.temp.set('ui', 'is_custom_start_time_enabled', str(value))
 
+    def get_is_solar_panel_rotation_enabled(self) -> bool:
+        return self.temp.getboolean('ui', 'is_solar_panel_rotation_enabled')
+
+    def set_is_solar_panel_rotation_enabled(self, value: bool) -> None:
+        if not isinstance(value, bool):
+            raise ValueError()
+        self.temp.set('ui', 'is_solar_panel_rotation_enabled', str(value))
+
     def get_custom_start_time(self) -> str:
         return self.temp.get_property('ui', 'custom_start_time')
 
@@ -149,6 +189,12 @@ class Config:
 
     def get_template_observation(self) -> OrderedDict:
         return self.static.get_template_observation()
+
+    def create_spacecraft_folder_only(self, base_scenario_folder_path: str) -> str:
+        return self.static.create_spacecraft_folder_only(base_scenario_folder_path)
+
+    def create_spacecraft_folder_with_solar_panels(self, base_scenario_folder_path: str) -> str:
+        return self.static.create_spacecraft_folder_with_solar_panels(base_scenario_folder_path)
 
     def get_mode_sensors(self) -> OrderedDict:
         return self.static.get_mode_sensors()

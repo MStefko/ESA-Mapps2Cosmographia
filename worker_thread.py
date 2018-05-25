@@ -28,6 +28,9 @@ def generation_task(gui: 'MappsConverter') -> Tuple[int, str, str]:
         target_name = gui.form.comboBox_targetList.currentText()
         gui.juice_config.set_selected_target(target_name)
 
+        apply_solar_panels = gui.form.cb_solarPanels.isChecked()
+        gui.juice_config.set_is_solar_panel_rotation_enabled(apply_solar_panels)
+
         obs_lifetime_min = int(gui.form.le_ObsDecayTimeMin.text())
         if obs_lifetime_min < 0:
             raise ValueError("Observation decay time can't be negative.")
@@ -36,24 +39,27 @@ def generation_task(gui: 'MappsConverter') -> Tuple[int, str, str]:
 
         ck_file_name = 'mapps_attitude_kernel.ck'
         attitude_file = gui.form.le_MappsAttitude.text()
-        scenario_file = gui.form.le_Scenario.text()
+        metakernel_file = gui.form.le_Metakernel.text()
         timeline_file = gui.form.le_MappsTimeline.text()
+        output_folder_path = gui.form.le_OutputFolderPath.text()
+        output_folder_name = gui.form.le_OutputFolderName.text()
+        gui.juice_config.set_last_output_folder(output_folder_name)
 
-        scenario_folder = os.path.dirname(scenario_file)
-        new_folder_name = 'mapps_output_' + time.strftime("%Y%m%d_%H%M%S")
-        new_folder_path = os.path.abspath(os.path.join(scenario_folder, '..', new_folder_name))
-        print("Creating scenario directory: {}".format(new_folder_path))
-        os.makedirs(new_folder_path)
+        real_folder_path = create_output_folder(os.path.join(output_folder_path, output_folder_name))
+        print("Created scenario directory: {}".format(real_folder_path))
 
-        output_ck_path = os.path.abspath(os.path.join(new_folder_path, ck_file_name))
+
+        output_ck_path = os.path.abspath(os.path.join(real_folder_path, ck_file_name))
         print("Generating CK kernel: {}".format(output_ck_path))
         convert(attitude_file, output_ck_path)
 
         new_scenario_file_path = gui.scenario_processor.process_scenario(
-            scenario_file, new_folder_name, ck_file_name)
+            metakernel_file, real_folder_path, ck_file_name, apply_solar_panels)
         print("Generating scenario file: {}".format(new_scenario_file_path))
         gui.timeline_processor.process_scenario(target_name, timeline_file,
-                                                new_scenario_file_path, gui.parse_custom_start_time())
+                                                new_scenario_file_path, gui.parse_custom_start_time(),
+                                                apply_solar_panels, metakernel_file,
+                                                os.path.abspath(os.path.join(real_folder_path, ck_file_name)))
         print("Finished.")
     except Exception as e:
         msg = (1, traceback.format_exc(0) + "\nSee console for more details.", "")
@@ -62,6 +68,18 @@ def generation_task(gui: 'MappsConverter') -> Tuple[int, str, str]:
         msg = (0, 'Scenario file generated at:\n\n{}'.format(new_scenario_file_path), new_scenario_file_path)
     return msg
 
+
+def create_output_folder(output_folder_path: str) -> str:
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+        return output_folder_path
+    else:
+        for i in range(1000):
+            new_path = os.path.join(os.path.dirname(output_folder_path),os.path.basename(output_folder_path) + f"_{i:03d}")
+            if not os.path.exists(new_path):
+                os.makedirs(new_path)
+                return new_path
+        raise RuntimeError(f"Could not create folder {output_folder_path}")
 
 class TaskRunner(QThread):
     """

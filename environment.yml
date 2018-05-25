@@ -4,3 +4,4 @@ dependencies:
 - simplejson
 - pyqt=5
 - jdcal
+- spiceypy

@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+ - Fixed bug where only observations for first period were imported from MAPPS Timeline Dump
+
 ## v1.1
  - Linux and Mac support
 

@@ -1,0 +1,7 @@
+{
+  "version": "1.0",
+  "name": "",
+  "require": [
+    "spacecraft_JUICE_arcs.json"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "name": "Cosmographia JUICE Example",
+  "spiceKernels": [
+	"spacecraft/stardust.tf",
+	"spacecraft/stardust.sclk",
+	"solar_panel_kernel.ck"
+  ]
+}

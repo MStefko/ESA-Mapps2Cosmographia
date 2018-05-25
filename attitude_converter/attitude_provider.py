@@ -184,3 +184,19 @@ class JuiceMex2Ker(Mex2Ker):
         Mex2Ker.__init__(self, tls_path, tsc_path, object_name, object_id)
 
 
+class PanelMex2Ker(Mex2Ker):
+
+    def __init__(self):
+
+        tls_path = 'naif0011.tls'
+        tsc_path = 'solar_panel_fict_20160326.tsc'
+
+        if _platform == "win32":
+            tls_path = 'naif0011.tls.win'
+            tsc_path = 'solar_panel_fict_20160326.tsc.win'
+
+        object_name = 'STARDUST'
+        object_id = 29
+        Mex2Ker.__init__(self, tls_path, tsc_path, object_name, object_id)
+
+

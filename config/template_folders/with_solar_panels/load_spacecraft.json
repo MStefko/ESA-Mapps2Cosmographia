@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "name": "",
+  "require": [
+	"panel_kernels.json",
+    "spacecraft/JUICE_body_def.json",
+	"spacecraft/JUICE_panel_def.json"
+  ]
+}

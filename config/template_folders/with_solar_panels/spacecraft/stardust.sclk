@@ -1,0 +1,28 @@
+This is a copy of JUICE sclk file, but the NAIF ID was changed from 28 (JUICE)
+to 29 (STARDUST). It is necessary for the CK kernels.
+
+  \begindata
+
+
+        SCLK_KERNEL_ID             = ( @2016-03-26 )
+
+        SCLK_DATA_TYPE_29         = ( 1 )
+        SCLK01_TIME_SYSTEM_29     = ( 1 )
+        SCLK01_N_FIELDS_29        = ( 2 )
+        SCLK01_MODULI_29          = ( 4294967296 65536 )
+        SCLK01_OFFSETS_29         = ( 0 0 )
+        SCLK01_OUTPUT_DELIM_29    = ( 1 )
+
+        SCLK_PARTITION_START_29   = ( 0 )
+
+        SCLK_PARTITION_END_29     = ( 2.81474976710656E14 )
+
+        SCLK01_COEFFICIENTS_29    = (
+ 
+              0.0000000000000E+00     @2022-MAY-31-23:59:59.999         1 )
+
+
+  \begintext
+  
+  
+End of SCLK file.
