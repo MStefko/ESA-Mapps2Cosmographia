@@ -153,20 +153,6 @@ class MappsConverter(QWidget):
             traceback.print_exc()
             return
 
-        # verify scenario file is placed in good location for bat script
-        self.execute_bat_script = True
-        scenario_error_message = self._verify_scenario_file_location()
-        # if we have an error, display error message
-        if scenario_error_message[0]:
-            response = QMessageBox.warning(
-                self, "Scenario file location warning",
-                scenario_error_message[1], QMessageBox.Ok | QMessageBox.Abort,
-                QMessageBox.Ok)
-            # also disable generation of bat file because it wouldn't work
-            self.execute_bat_script = False
-            if response == QMessageBox.Abort:
-                return
-
         # run the generation task
         self.task_runner = TaskRunner(self)
         self.busy_widget = WorkingMessage("Working")
@@ -197,35 +183,6 @@ class MappsConverter(QWidget):
         if not os.path.isdir(output_path):
             raise ValueError("Output folder path '{}' must point to a folder".format(output_path))
 
-    def _verify_scenario_file_location(self) -> Tuple[int, str]:
-        """ Verifies whether the run_scenario.bat file will work, based on location
-        of the original scenario JSON (which should be in
-        <cosmographia_root>/JUICE/scenarios/), and whether <cosmographia_root> is
-        in the system's PATH environment variable.
-
-        :return: tuple in format (exit_code, exit_message)
-            exit code: 0 - all good
-                       1 - scenario file has wrong location
-                       2 - cosmographia folder not in PATH
-        """
-        scenario_file_path = self.form.le_Metakernel.text()
-        scenario_folder_path, scenario_file = os.path.split(scenario_file_path)
-        juice_folder_path, scenario_folder_name = os.path.split(scenario_folder_path)
-        cosmographia_folder_path, juice_folder_name = os.path.split(juice_folder_path)
-        error_message = (0, "")
-        if sys.platform == "win32":
-            windows_paths = [os.path.abspath(s.strip('"')) for s in os.getenv("Path").split(';')]
-            if os.path.abspath(cosmographia_folder_path) not in windows_paths:
-                error_message = (
-                    2,
-                    "Cosmographia root folder '{}' not found in Windows PATH environment variable.".format(
-                        cosmographia_folder_path.strip("\\")) +
-                    "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
-        else:
-            # Linux directory structure check not implemented.
-            pass
-        return error_message
-
     def set_exit_message(self, msg: Tuple[int, str, str]) -> None:
         """ Stores exit message from TaskRunner thread for later display.
 
@@ -245,44 +202,29 @@ class MappsConverter(QWidget):
             response = QMessageBox.warning(self, "Error", self.exit_message[1],
                                            QMessageBox.Ok, QMessageBox.Ok)
             return
-        # otherwise display dialog box based on .bat file status
+        # otherwise display dialog box
         else:
             box = QMessageBox()
             box.setIcon(QMessageBox.Information)
             box.setWindowTitle("Success")
             box.setText(self.exit_message[1])
-            # 3 options: launch cosmographia | exit script | do nothing
-            if self.execute_bat_script:
-                box.setStandardButtons(QMessageBox.Ok | QMessageBox.Ignore |
-                                       QMessageBox.Cancel)
-                b_launch = box.button(QMessageBox.Ok)
-                b_launch.setText('Launch scenario')
-                b_close = box.button(QMessageBox.Ignore)
-                b_close.setText('Close program')
-                b_donothing = box.button(QMessageBox.Cancel)
-                b_donothing.setText('Do nothing')
-                box.exec_()
-                if box.clickedButton() == b_launch:
-                    # Launch cosmographia
-                    os.chdir(os.path.dirname(self.exit_message[2]))
-                    if sys.platform == "win32":
-                        os.startfile('run_scenario.bat')
-                    else:
-                        os.startfile('run_scenario.sh')
-                elif box.clickedButton() == b_close:
-                    sys.exit(0)
+            box.setStandardButtons(QMessageBox.Ok | QMessageBox.Ignore |
+                                   QMessageBox.Cancel)
+            b_launch = box.button(QMessageBox.Ok)
+            b_launch.setText('Launch scenario')
+            b_close = box.button(QMessageBox.Ignore)
+            b_close.setText('Close program')
+            b_donothing = box.button(QMessageBox.Cancel)
+            b_donothing.setText('Do nothing')
+            box.exec_()
+            if box.clickedButton() == b_launch:
+                # Launch cosmographia
+                os.chdir(os.path.dirname(self.exit_message[2]))
+                if sys.platform == "win32":
+                    os.startfile('run_scenario.bat')
                 else:
-                    return
-            # 2 options: exit script | do nothing
+                    os.startfile('run_scenario.sh')
+            elif box.clickedButton() == b_close:
+                sys.exit(0)
             else:
-                box.setStandardButtons(QMessageBox.Ignore |
-                                       QMessageBox.Cancel)
-                b_close = box.button(QMessageBox.Ignore)
-                b_close.setText('Close program')
-                b_donothing = box.button(QMessageBox.Cancel)
-                b_donothing.setText('Do nothing')
-                box.exec_()
-                if box.clickedButton() == b_close:
-                    sys.exit(0)
-                else:
-                    return
+                return
