@@ -5,8 +5,6 @@
       {
          "class": "spacecraft",
          "name": "JUICE_SOLARPANELS",
-         "startTime": "2022-05-31 23:59:59.999 UTC",
-		 "endTime": "2033-06-04 02:49:00 UTC",
 		 "center": "Sun",
 		 "trajectoryFrame": "ICRF",
 		 "trajectory": {
@@ -50,6 +48,100 @@
         "sampleCount": 500
         
       }
+    },
+	{
+        "class": "spacecraft",
+        "name": "JUICE_SOLARPANELS_BEFORE",
+        "startTime": "2022-05-31 23:59:59.999 UTC",
+		"center": "Sun",
+		"trajectoryFrame": "ICRF",
+		"trajectory": {
+                 "type": "Spice",
+                 "target": "JUICE",
+                 "center": "Sun"
+            },
+	    "bodyFrame": {
+			"type": "Spice",
+			"name": "JUICE_SPACECRAFT"
+	    },
+	    "label": {
+            "color": [
+               0.6,
+               1,
+               1
+            ],
+        "fadeSize": 10000000000,
+        "showText": false
+        },
+		"geometry": {
+			"type": "Mesh",
+			"meshRotation": [
+				0.0,
+				0.0,
+				0.0,
+				-1.0
+			],
+			"size": 2.1,
+			"source": "solar_panels.3ds"
+		},
+		"trajectoryPlot": {
+			"color": [
+				1,
+				1,
+				1
+			],
+			"duration": "5d",
+			"lead": 0,
+			"fade": 1,
+			"sampleCount": 500
+        }
+    },
+	{
+        "class": "spacecraft",
+        "name": "JUICE_SOLARPANELS_AFTER",
+		"endTime": "2033-06-04 02:49:00 UTC",
+		"center": "Sun",
+		"trajectoryFrame": "ICRF",
+		"trajectory": {
+                 "type": "Spice",
+                 "target": "JUICE",
+                 "center": "Sun"
+            },
+	    "bodyFrame": {
+			"type": "Spice",
+			"name": "JUICE_SPACECRAFT"
+	    },
+	    "label": {
+            "color": [
+               0.6,
+               1,
+               1
+            ],
+        "fadeSize": 10000000000,
+        "showText": false
+        },
+		"geometry": {
+			"type": "Mesh",
+			"meshRotation": [
+				0.0,
+				0.0,
+				0.0,
+				-1.0
+			],
+			"size": 2.1,
+			"source": "solar_panels.3ds"
+		},
+		"trajectoryPlot": {
+			"color": [
+				1,
+				1,
+				1
+			],
+			"duration": "5d",
+			"lead": 0,
+			"fade": 1,
+			"sampleCount": 500
+        }
     }
   ]
 }

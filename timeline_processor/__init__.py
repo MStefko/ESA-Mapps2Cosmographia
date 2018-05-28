@@ -215,6 +215,25 @@ class TimelineProcessor:
         spy.unload(ck_file_path)
         spy.unload(metakernel_file_path)
 
+        spacecraft_json_path = os.path.join(output_folder_path, "spacecraft", "spacecraft", "JUICE_panel_def.json")
+        with open(spacecraft_json_path) as f:
+            spacecraft_json = json.load(f)
+        during = spacecraft_json["items"][0]
+        before = spacecraft_json["items"][1]
+        after = spacecraft_json["items"][2]
+
+        def format_time_str(time: datetime) -> str:
+            return time.strftime("%Y-%m-%d %H:%M:%S.000 UTC")
+        during["startTime"] = format_time_str(start_time)
+        during["endTime"] = format_time_str(end_time)
+        before["endTime"] = format_time_str(start_time)
+        after["startTime"] = format_time_str(end_time)
+
+        with open(spacecraft_json_path, 'w') as json_file:
+            json.dump(spacecraft_json, json_file, indent=2)
+        return
+
+
     def _generate_bat_file(self, observations: OrderedDict, require_json_path: str,
                            start_time_override: datetime = None) -> None:
         """ Generates .bat file (Windows) that can launch Cosmographia already with the scenario loaded
