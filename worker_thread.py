@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from ui.gui_widget import MappsConverter
 
 
-def generation_task(gui: 'MappsConverter') -> Tuple[int, str, str]:
+def generation_task(gui: 'MappsConverter', display_function = None) -> Tuple[int, str, str]:
     """ Generates the scenario from inputs.
     First, parse all file names. Then, use MEX2KER to convert MAPPS attitude into
     a CK kernel. Generate a scenario using the MAPPS timeline, and put all necessary
@@ -23,7 +23,15 @@ def generation_task(gui: 'MappsConverter') -> Tuple[int, str, str]:
     :param gui: Instance of main GUI
     :return: Return 3-tuple in format (exit_code, message, scenario_file_path)
     """
+    def display_status(message):
+        print(message)
+        try:
+            display_function(message)
+        except Exception:
+            pass
+
     try:
+        display_status("Parsing GUI values.")
         gui.parse_instrument_checkboxes()
         target_name = gui.form.comboBox_targetList.currentText()
         gui.juice_config.set_selected_target(target_name)
@@ -48,11 +56,14 @@ def generation_task(gui: 'MappsConverter') -> Tuple[int, str, str]:
         real_folder_path = create_output_folder(os.path.join(output_folder_path, output_folder_name))
         print("Created scenario directory: {}".format(real_folder_path))
 
-
+        display_status("Generating CK kernel.")
         output_ck_path = os.path.abspath(os.path.join(real_folder_path, ck_file_name))
         print("Generating CK kernel: {}".format(output_ck_path))
         convert(attitude_file, output_ck_path)
 
+        display_status("Generating scenario file.")
+        if apply_solar_panels:
+            display_status("Generating solar panel kernel.")
         new_scenario_file_path = gui.scenario_processor.process_scenario(
             metakernel_file, real_folder_path, ck_file_name, apply_solar_panels)
         print("Generating scenario file: {}".format(new_scenario_file_path))
@@ -88,12 +99,16 @@ class TaskRunner(QThread):
     def __init__(self, gui: 'MappsConverter'):
         super(TaskRunner, self).__init__()
         self.gui = gui
+        self._message_function = None
 
     def run(self):
         """Execute the generation_task, and dump the exit message back to
         the gui."""
-        msg = generation_task(self.gui)
+        msg = generation_task(self.gui, self._message_function)
         self.dump_msg(msg)
+
+    def set_message_function(self, message_function):
+        self._message_function = message_function
 
     def dump_msg(self, msg: Tuple[int, str, str]):
         self.gui.set_exit_message(msg)
@@ -107,25 +122,27 @@ class WorkingMessage(QtWidgets.QDialog):
 
         # Initialize Values
         self.o_msg = msg
-        self.msg = msg
         self.val = 0
 
         self.dialog.info_label.setText(msg)
 
         self.timer = QtCore.QTimer()
-        self.timer.setInterval(500)
+        self.timer.setInterval(250)
         self.timer.timeout.connect(self.update_message)
         self.timer.start()
 
-    def update_message(self):
-        self.val += 1
-        self.msg += '.'
+    def set_message(self, status: str):
+        self.o_msg = status
+        self.update_message()
 
-        if self.val < 20:
-            self.dialog.info_label.setText(self.msg)
+    def update_message(self):
+        if self.val < 3:
+            self.val += 1
         else:
             self.val = 0
-            self.msg = self.o_msg
+
+        msg = self.o_msg + "." * self.val
+        self.dialog.info_label.setText(msg)
 
     def loading_stop(self):
         self.timer.stop()

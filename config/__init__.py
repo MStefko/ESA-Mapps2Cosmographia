@@ -98,6 +98,11 @@ class Config:
                 return ""
             return self.get(section, option)
 
+        def get_boolean(self, section: str, option: str) -> bool:
+            if not self.has_option(section, option):
+                return False
+            return self.getboolean(section, option)
+
     def __init__(self, path: str):
         self.static = Config.StaticConfig(path)
         self.temp = Config.TempConfig(path)
@@ -154,7 +159,7 @@ class Config:
         self.temp.set_property('ui', 'checked_instruments', ",".join(instrument_list))
 
     def get_is_custom_start_time_enabled(self) -> bool:
-        return self.temp.getboolean('ui', 'is_custom_start_time_enabled')
+        return self.temp.get_boolean('ui', 'is_custom_start_time_enabled')
 
     def set_is_custom_start_time_enabled(self, value: bool) -> None:
         if not isinstance(value, bool):
@@ -162,7 +167,7 @@ class Config:
         self.temp.set('ui', 'is_custom_start_time_enabled', str(value))
 
     def get_is_solar_panel_rotation_enabled(self) -> bool:
-        return self.temp.getboolean('ui', 'is_solar_panel_rotation_enabled')
+        return self.temp.get_boolean('ui', 'is_solar_panel_rotation_enabled')
 
     def set_is_solar_panel_rotation_enabled(self, value: bool) -> None:
         if not isinstance(value, bool):

@@ -170,6 +170,7 @@ class MappsConverter(QWidget):
         # run the generation task
         self.task_runner = TaskRunner(self)
         self.busy_widget = WorkingMessage("Working")
+        self.task_runner.set_message_function(self.busy_widget.set_message)
         self.task_runner.finished.connect(self.loading_stop)
         self.task_runner.start()
         self.busy_widget.show()
@@ -214,14 +215,7 @@ class MappsConverter(QWidget):
         error_message = (0, "")
         if sys.platform == "win32":
             windows_paths = [os.path.abspath(s.strip('"')) for s in os.getenv("Path").split(';')]
-            if not (os.path.exists(os.path.join(cosmographia_folder_path, 'Cosmographia.exe'))
-                    and juice_folder_name == "JUICE"
-                    and scenario_folder_name == "scenarios"):
-                error_message = (
-                    1,
-                    "Scenario file is not placed in folder '<cosmographia_root_folder>\\JUICE\\scenarios\\'. "
-                    "It will not be possible to use the 'run_scenario.bat' script to launch the scenario.")
-            elif os.path.abspath(cosmographia_folder_path) not in windows_paths:
+            if os.path.abspath(cosmographia_folder_path) not in windows_paths:
                 error_message = (
                     2,
                     "Cosmographia root folder '{}' not found in Windows PATH environment variable.".format(
