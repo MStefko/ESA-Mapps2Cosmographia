@@ -5,23 +5,21 @@ This plugin allows you to import JUICE MAPPS data (attitude + instrument operati
 ## Preparing Cosmographia
 In short, you need to set up [Spice-enhanced Cosmographia](https://www.cosmos.esa.int/web/spice/cosmographia),
 and correctly install [JUICE datafiles](ftp://spiftp.esac.esa.int/cosmographia/missions/) so that you can run
-the "stock" scenarios included in the `<cosmographia_root>/JUICE/scenarios/` folder.
+the "stock" scenarios included in the `../JUICE/scenarios/` folder.
 
 See Marc Costa's [SETUP GUIDE](ftp://spiftp.esac.esa.int/cosmographia/missions/aareadme.txt) for detailed instructions.
-You need to follow all steps in the 'A very short introduction to SPICE-Enhanced Cosmographia Setup' section,
-so that following conditions are met:
- 1. [JUICE datafiles](ftp://spiftp.esac.esa.int/cosmographia/missions/) are placed under `<cosmographia_root>\JUICE` folder, i.e. e.g. `C:\Users\Marcel Stefko\cosmographia-3.0\JUICE\scenarios` is a valid file path.
- 2. [JUICE kernels](ftp://spiftp.esac.esa.int/data/SPICE/JUICE/misc/release_notes/juice_ftp_160.txt) are downloaded, with `PATH_VALUES` set correctly in each metakernel.
- 3. `spice_JUICE_crema_xxx.json` files in `<cosmographia_root>/JUICE/config/` folder are modified so that the 'spiceKernels' entries point to the corresponding metakernels
- from point 2. Backslashes in Windows-style filepaths **must** be escaped, e.g. `C:\\Users\\Marcel Stefko\\SPICE\\kernels\\mk\\juice_crema_3_2_v151.tm`.
+You need to follow steps in the 'A very short introduction to SPICE-Enhanced Cosmographia Setup' section,
+so that following two conditions are met:
+ 1. You can run all scenarios in `../JUICE/scenarios/` folder using the Cosmographia `Open Catalog...` functionality.
+ 2. (Optional) You can start Cosmographia by typing `Cosmographia` in your system's command-line terminal.
 
 ## Installation
 ### As standalone program (EXPERIMENTAL)
- 1. Unzip `Mapps2Cosmographia.zip` into any directory.
+ 1. Unzip `Mapps2Cosmographia_v2.0.zip` into any directory.
  2. Run `Mapps2Cosmographia.exe`.
 
 ### As python script
-This plugin requires `python3` with packages `pyqt5`, `jdcal`, and `simplejson` installed.
+This plugin requires `python3` with packages `spiceypy`, `pyqt5`, `jdcal`, and `simplejson` installed.
 
 If you use Anaconda, you can install using these steps:
 
@@ -33,7 +31,7 @@ If you use Anaconda, you can install using these steps:
  
 ![](doc/img/installation.png)
 
-**Fig 1: Correct installation procedure.**
+**Fig 1: Correct Anaconda installation procedure.**
 
 For subsequent runs, you need to `activate m2c` environment every time you restart Anaconda prompt.
 
@@ -42,7 +40,7 @@ For subsequent runs, you need to `activate m2c` environment every time you resta
 
 ![](doc/img/plugin_gui.png)
 
-**Fig 5: Main plugin GUI.**
+**Fig 2: Main plugin GUI.**
 
 The program requires input of 3 data files:
 
@@ -52,12 +50,13 @@ required quaternion data for generating a new CK kernel.
  2. `MAPPS Timeline Dump`: This is a MAPPS `.asc` file created using
 `MAPPS -> Data -> Dump Timeline Data...`. It contains information about instrument
 activity.
- 3. `Cosmographia Scenario File`: This is a `.json` file that you would normally use to load
-a JUICE Cosmographia scenario without any observations (i.e. only to display JUICE's trajectory).
-This file should reside in `<cosmographia_root>/JUICE/scenarios/` folder if you followed installation
-instructions correctly.
+ 3. `SPICE Metakernel`: This is a `.tm` or `.mk` metakernel that completely describes
+ a base JUICE trajectory, e.g. `C:\SPICE\Kernels\JUICE\mk\juice_crema_3_2_v151.tm`
 
- 
+Furthermore, you need to specify an output folder for all generated scenarios,
+and a name for the particular scenario being generated.
+
+
  - You can customize which instrument operations will be displayed using the checkboxes.
  - `Target body` specifies which body is used to display instrument ground tracks. For moon flybys,
 use the appropriate moon.
@@ -66,23 +65,24 @@ use the appropriate moon.
  is still displayed, after the observation's end time.
  - `Custom start time` allows manually specifying the simulation time at which the scenario is launched.
  The timestamp must be in ISO8601 format without the ending `Z`, i.e. `yyyy-mm-ddTHH:MM:SS`
+ - `Solar panel rotation` enables functionality where solar panel CK kernels are computed using
+ SPICE, and displayed in the scenario.
 
-To generate a scenario, click `Generate files!`. A `<cosmographia_root>/JUICE/mapps_output_yyyymmdd_HHMMSS/`
+To generate a scenario, click `Generate files!`. The specified output
 folder will be created. Inside this folder all necessary files are stored. The original
 files are not modified by this script.
 
 To launch this scenario, there are three options:
 
  1. Launch immediately by selecting `Launch scenario` option in the dialog that appears after
- the scenario is generated (this runs the `run_scenario.bat` (Windows) or `run_scenario.sh` (Unix) script in the output folder). This option will only
- appear on Windows if all data files are correctly structured within the `<cosmographia_root>/JUICE` folder.
+ the scenario is generated (this runs the `run_scenario.bat` (Windows) or `run_scenario.sh` (Unix) script in the output folder).
  2. Run the `run_scenario.bat` (Windows) or `run_scenario.sh` (Unix) script in the output folder manually. This automatically finds JUICE and sets time of first observation.
- 3. Launch Cosmographia, go to `Cosmographia -> File -> Open Catalog...`, and open the `<cosmographia_root/JUICE/mapps_output_yyyymmdd_HHMMSS/LOAD_SCENARIO.json`
+ 3. Launch Cosmographia, go to `Cosmographia -> File -> Open Catalog...`, and open the `<output_folder>/LOAD_SCENARIO.json`
 file. You need to set the time of interest and find JUICE manually, using Cosmographia's controls.
 
 ![](doc/img/cosmographia.png)
 
-**Fig 6: Cosmographia with running generated scenario.**
+**Fig 3: Cosmographia with running generated scenario.**
 
 ## Configuration
 Some settings can be adjusted in `config_static.ini` in the `[itl]` section (make sure you adhere to the JSON format specification, otherwise errors will occur):
@@ -98,7 +98,7 @@ sensor FOVs and ground tracks.
 ## Troubleshooting
 - Script runs fine, but Cosmographia displays `Error loading kernel: <kernel path>...`?
     - Make sure that the `PATH_VALUES` variable in the given kernel is correctly set.
-- The script doesn't start up correctly.
+- The program doesn't start up correctly.
     - Check the `config_static.ini` and `config_temp.ini` files, if their content seems corrupted, replace them with original ones from the repository.
 
 ## Acknowledgements
