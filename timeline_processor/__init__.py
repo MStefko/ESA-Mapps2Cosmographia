@@ -42,23 +42,26 @@ class TimelineProcessor:
         sensors and observations into scenario JSON file.
 
         :param target_name: Name of target body (e.g. "Callisto")
-        :param timeline_file_path: Path to MAPPS Timeline Dump .asc file.
+        :param timeline_file_path: Path to MAPPS Timeline Dump .asc file. Can be an empty string
         :param new_require_json_path: Path to scenario JSON file in output folder.
         :param custom_start_time: (optional) Custom start time of scenario.
         """
         output_folder_path = os.path.abspath(os.path.dirname(new_require_json_path))
-        with open(timeline_file_path) as f:
-            parsed_lines = self._parse_experiment_modes(f)
+        if timeline_file_path:
+            with open(timeline_file_path) as f:
+                parsed_lines = self._parse_experiment_modes(f)
+        else:
+            parsed_lines = []
         observations = self._process_parsed_lines_into_observations(parsed_lines)
         self.sensor_generator.generate_sensors(observations, target_name, output_folder_path)
         self._generate_observation_files(observations, target_name, new_require_json_path)
-        self._generate_bat_file(observations, new_require_json_path, custom_start_time)
-        self._generate_bash_file(observations, new_require_json_path, custom_start_time)
+        self._generate_bat_file(observations, new_require_json_path, target_name, custom_start_time)
+        self._generate_bash_file(observations, new_require_json_path, target_name, custom_start_time)
         if generate_solar_panels:
             if metakernel_file_path is None or ck_file_path is None:
                 raise ValueError("Specify both metakernel and ck file path!")
             self._generate_solar_panel_kernel(observations, metakernel_file_path, ck_file_path,
-                                              output_folder_path)
+                                              output_folder_path, custom_start_time)
 
     def set_instruments(self, instrument_list: List[str]) -> None:
         """
@@ -199,16 +202,19 @@ class TimelineProcessor:
         return
 
     def _generate_solar_panel_kernel(self, observations, metakernel_file_path, ck_file_path,
-                                     output_folder_path,
+                                     output_folder_path, custom_start_time,
                                      extra_time_hours: float = 24, step_size_s: float = 20):
         spp = SolarPanelProcessor("JUICE")
         spy.furnsh(metakernel_file_path)
         spy.furnsh(ck_file_path)
 
         td = timedelta(hours=extra_time_hours)
-
-        start_time = self._find_first_start_time(observations) - td
-        end_time = self._find_last_end_time(observations) + td
+        if custom_start_time is not None and len(observations)==0:
+            start_time = custom_start_time + td
+            end_time = custom_start_time - td
+        else:
+            start_time = self._find_first_start_time(observations) - td
+            end_time = self._find_last_end_time(observations) + td
 
         spp.create_panel_ck(start_time, end_time, step_size_s,
                             os.path.abspath(os.path.join(output_folder_path, 'spacecraft', 'solar_panel_kernel.ck')))
@@ -235,7 +241,7 @@ class TimelineProcessor:
 
 
     def _generate_bat_file(self, observations: OrderedDict, require_json_path: str,
-                           start_time_override: datetime = None) -> None:
+                           target_name: str, start_time_override: datetime = None) -> None:
         """ Generates .bat file (Windows) that can launch Cosmographia already with the scenario loaded
         with camera following JUICE, and at time of beginning of first parsed obsevation,
         or at defined start time.
@@ -244,6 +250,7 @@ class TimelineProcessor:
 
         :param observations: Observation dictionary, used to determine start time
         :param require_json_path: Path to observation base .json file
+        :param target_name: name of target to track at start
         :param start_time_override: (optional) Custom starting time of bat file
         :return:
         """
@@ -266,14 +273,14 @@ class TimelineProcessor:
             file_contents = \
 f'''REM Generated on platform: {sys.platform}
 
-Cosmographia "%cd%\{os.path.basename(require_json_path)}" -u "cosmo:JUICE?select=JUICE&frame=bfix&jd={start_time_jd:.5f}&x=-0.863936&y=0.561111&z=-2.514421&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"
+Cosmographia "%cd%\{os.path.basename(require_json_path)}" -u "cosmo:JUICE?select=JUICE&frame=track&ftarget={target_name}&jd={start_time_jd:.5f}&x=1.893473&y=0.961017&z=4.926394&qw=-0.992279&qx=0.070385&qy=-0.097857&qz=-0.029180&ts=200&fov=50"
 
 '''
             f.write(file_contents)
         return
 
     def _generate_bash_file(self, observations: OrderedDict, require_json_path: str,
-                           start_time_override: datetime = None) -> None:
+                            target_name: str, start_time_override: datetime = None) -> None:
         """ Generates bash file (Mac/Linux) that can launch Cosmographia already with the scenario loaded
         with camera following JUICE, and at time of beginning of first parsed obsevation,
         or at defined start time.
@@ -282,6 +289,7 @@ Cosmographia "%cd%\{os.path.basename(require_json_path)}" -u "cosmo:JUICE?select
 
         :param observations: Observation dictionary, used to determine start time
         :param require_json_path: Path to observation base .json file
+        :param target_name: name of target to track at start
         :param start_time_override: (optional) Custom starting time of sh file
         :return:
         """
@@ -308,7 +316,7 @@ f'''#!/bin/bash
 
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 
-Cosmographia "${{DIR}}/{os.path.basename(require_json_path)}" -u "cosmo:JUICE?select=JUICE&frame=bfix&jd={start_time_jd:.5f}&x=-0.863936&y=0.561111&z=-2.514421&qw=-0.155323&qx=-0.059716&qy=0.979340&qz=0.114898&ts=200&fov=50"
+Cosmographia "${{DIR}}/{os.path.basename(require_json_path)}" -u "cosmo:JUICE?select=JUICE&frame=track&ftarget={target_name}&jd={start_time_jd:.5f}&x=1.893473&y=0.961017&z=4.926394&qw=-0.992279&qx=0.070385&qy=-0.097857&qz=-0.029180&ts=200&fov=50"
 
 '''
             f.write(file_contents)

@@ -1,7 +1,9 @@
+import traceback
 from typing import Tuple, List
 from datetime import datetime
 
 import spiceypy as spy
+from spiceypy.utils.support_types import SpiceyError
 import numpy as np
 from .attitude_provider import MappsTimedQuaternion, PanelMex2Ker
 
@@ -82,7 +84,11 @@ class SolarPanelProcessor:
     def create_panel_ck(self, start_time: datetime, end_time: datetime, step_s: float, ck_filepath: str):
         start_et = self._datetime2et(start_time)
         end_et = self._datetime2et(end_time)
-        quaternions = self._generate_panel_quaternions(start_et, end_et, step_s)
+        try:
+            quaternions = self._generate_panel_quaternions(start_et, end_et, step_s)
+        except SpiceyError:
+            traceback.print_exc()
+            raise RuntimeError(f"Quaternion computation for solar panels failed.\nStart time: {start_time}\nEnd time: {end_time}\nCheck console for more details.")
         self._m2k.convert(quaternions, ck_filepath)
 
     @staticmethod

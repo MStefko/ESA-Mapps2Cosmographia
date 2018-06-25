@@ -177,9 +177,13 @@ class MappsConverter(QWidget):
         scenario_file = self.form.le_Metakernel.text()
         timeline_file = self.form.le_MappsTimeline.text()
         output_path = self.form.le_OutputFolderPath.text()
-        for path in [attitude_file, scenario_file, timeline_file, output_path]:
+        for path in [attitude_file, scenario_file, output_path]:
             if not os.path.exists(path):
                 raise ValueError("File: '{}' not found!".format(path))
+        if not os.path.exists(timeline_file) and len(timeline_file)>0:
+            raise ValueError("MAPPS Timeline Dump field must point to a valid file or be empty.")
+        if len(timeline_file) == 0 and self.form.cb_solarPanels.isChecked() and not self.form.cb_startTime.isChecked():
+            raise ValueError("Start time override is mandatory when MAPPS Timeline Dump is missing and solar panels are computed.")
         if not os.path.isdir(output_path):
             raise ValueError("Output folder path '{}' must point to a folder".format(output_path))
 
