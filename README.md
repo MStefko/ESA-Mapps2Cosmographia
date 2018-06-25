@@ -11,7 +11,8 @@ See Marc Costa's [SETUP GUIDE](ftp://spiftp.esac.esa.int/cosmographia/missions/a
 You need to follow steps in the 'A very short introduction to SPICE-Enhanced Cosmographia Setup' section,
 so that following two conditions are met:
  1. You can run all scenarios in `../JUICE/scenarios/` folder using the Cosmographia `Open Catalog...` functionality.
- 2. (Optional) You can start Cosmographia by typing `Cosmographia` in your system's command-line terminal.
+ 2. (Optional) You can start Cosmographia by typing `Cosmographia` in your system's command-line terminal. If you don't do this,
+ you won't be able to launch the generated scenarios straight from the program.
 
 ## Installation
 ### As standalone program (EXPERIMENTAL)
