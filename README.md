@@ -16,6 +16,7 @@ so that following two conditions are met:
 
 ## Installation
 ### As standalone program (EXPERIMENTAL)
+Releases can be found [here](https://github.com/MStefko/ESA-Mapps2Cosmographia/releases/tag/v2.0).
  1. Unzip `Mapps2Cosmographia_v2.0.zip` into any directory.
  2. Run `Mapps2Cosmographia.exe`.
 
