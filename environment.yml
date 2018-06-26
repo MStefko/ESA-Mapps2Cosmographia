@@ -1,7 +1,12 @@
 name: m2c
+channels:
+- andrewannex
+- conda-forge
 dependencies:
 - python=3.6
+- numpy
 - simplejson
 - pyqt=5
 - jdcal
 - spiceypy
+- pyinstaller
