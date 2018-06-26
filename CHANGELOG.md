@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased
+## v2.0
  - Fixed bug where only observations for first period were imported from MAPPS Timeline Dump
-
-## v1.1
+ - JUICE models are now included in the distribution, which greatly simplifies Cosmographia setup.
+ - Implemented solar panel rotation calculation using spiceypy.
  - Linux and Mac support
+
 
 ## v1.0
  - Moved to Python3.6, Python2 compatibility removed.

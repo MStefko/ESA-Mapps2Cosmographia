@@ -92,6 +92,9 @@ Some settings can be adjusted in `config_static.ini` in the `[itl]` section (mak
 sensor FOV is associated with each mode. It is organised by instrument name, where for each instrument you have its own dictionary. Each entry of this dictionary has the format `"instrument_mode": "sensor_fov_name"`.
 - `sensor_colors`: This dictionary defines for each instrument an `RGB` color which is used to display
 sensor FOVs and ground tracks.
+- `panel_ck_sampling_seconds`: How densely is the solar panel CK sampled. Default is a step of 20 seconds.
+- `panel_ck_span_days`: How wide is the solar panel CK coverage extent in days. Default is 14 days. This extent is counted in addition to the period covered by observation. E.g. if the value is 14, then the solar panel coverage
+starts 7 days before start of first tracked observation, and ends 7 days after end of the last one.
 
 ## Issues
 - Please report any issues to [Marcel Stefko](mailto:marcel.stefko@esa.int)

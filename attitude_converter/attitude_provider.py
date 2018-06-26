@@ -159,7 +159,12 @@ class Mex2Ker:
             if return_val:
                 raise RuntimeError("Mex2Ker returned error value: {}".format(return_val))
         else:
-            raise RuntimeError("Unsupported platform.")
+            return_val = call(['./mex2ker_linux_32bit',
+                               '-input', 'quaternion.moc',
+                               '-setup', 'quaternion.setup',
+                               '-output', output_ck_path])
+            if return_val:
+                raise RuntimeError("Mex2Ker returned error value: {}".format(return_val))
 
         # if we had a space, we move the output ck into the desired location
         if " " in ck_path:

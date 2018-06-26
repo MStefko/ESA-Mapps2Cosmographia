@@ -2,7 +2,7 @@ import calendar
 import traceback
 from collections import namedtuple, OrderedDict
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Tuple
 
 from attitude_converter.solar_panel_processor import SolarPanelProcessor
 import spiceypy as spy
@@ -34,6 +34,7 @@ class TimelineProcessor:
             self.juice_config.get_instruments()
         self.set_observation_lifetime_seconds(observation_lifetime_s)
         self.sensor_generator = SensorGenerator(juice_config)
+        self.timeline_fallback_bounds = None
 
     def process_scenario(self, target_name: str, timeline_file_path: str, new_require_json_path: str,
                          custom_start_time: datetime = None, generate_solar_panels = False,
@@ -50,8 +51,13 @@ class TimelineProcessor:
         if timeline_file_path:
             with open(timeline_file_path) as f:
                 parsed_lines = self._parse_experiment_modes(f)
+            with open(timeline_file_path) as f:
+                self.timeline_fallback_bounds = self._parse_timeline_fallback_times(f)
         else:
             parsed_lines = []
+            if custom_start_time is None:
+                raise ValueError("No observations found - custom start time required!")
+            self.timeline_fallback_bounds = (custom_start_time, custom_start_time)
         observations = self._process_parsed_lines_into_observations(parsed_lines)
         self.sensor_generator.generate_sensors(observations, target_name, output_folder_path)
         self._generate_observation_files(observations, target_name, new_require_json_path)
@@ -61,7 +67,7 @@ class TimelineProcessor:
             if metakernel_file_path is None or ck_file_path is None:
                 raise ValueError("Specify both metakernel and ck file path!")
             self._generate_solar_panel_kernel(observations, metakernel_file_path, ck_file_path,
-                                              output_folder_path, custom_start_time)
+                                              output_folder_path)
 
     def set_instruments(self, instrument_list: List[str]) -> None:
         """
@@ -105,6 +111,27 @@ class TimelineProcessor:
                     mode = line[74:91].rstrip()
                     parsed_lines.append(Entry(utc_timestamp, instrument_name, mode))
         return parsed_lines
+
+    def _parse_timeline_fallback_times(self, f) -> Tuple[datetime, datetime]:
+        """
+
+        :param f: File handle of MAPPS Timeline Dump .asc file
+        :return: 2-tuple of start and end time of mapps timeline dump file.
+        """
+        start_time, end_time = None, None
+        for line in f:
+            if line.startswith("Start time (UTC):"):
+                time_string = line[18:38]
+                start_time = datetime.strptime(time_string, "%d-%b-%Y_%H:%M:%S")
+                break
+        for line in f:
+            if line.startswith("End time (UTC):"):
+                time_string = line[18:38]
+                end_time = datetime.strptime(time_string, "%d-%b-%Y_%H:%M:%S")
+                continue
+        if start_time is None or end_time is None:
+            raise ValueError("Error in parsing MAPPS Timeline Dump .asc file. Start and end of timeline could not be identified.")
+        return (start_time, end_time)
 
     def _process_parsed_lines_into_observations(self, parsed_lines: List[Entry]) -> OrderedDict:
         """ Processes parsed lines into a nested dictionary, which for each instrument and
@@ -202,7 +229,7 @@ class TimelineProcessor:
         return
 
     def _generate_solar_panel_kernel(self, observations, metakernel_file_path, ck_file_path,
-                                     output_folder_path, custom_start_time,
+                                     output_folder_path,
                                      extra_time_hours: float = None, step_size_s: float = None):
         if extra_time_hours is None:
             extra_time_hours = self.juice_config.get_solar_panel_ck_span_days() * 24.0 / 2
@@ -213,12 +240,8 @@ class TimelineProcessor:
         spy.furnsh(ck_file_path)
 
         td = timedelta(hours=extra_time_hours)
-        if custom_start_time is not None and len(observations)==0:
-            start_time = custom_start_time - td
-            end_time = custom_start_time + td
-        else:
-            start_time = self._find_first_start_time(observations) - td
-            end_time = self._find_last_end_time(observations) + td
+        start_time = self._find_first_start_time(observations) - td
+        end_time = self._find_last_end_time(observations) + td
 
         spp.create_panel_ck(start_time, end_time, step_size_s,
                             os.path.abspath(os.path.join(output_folder_path, 'spacecraft', 'solar_panel_kernel.ck')))
@@ -338,8 +361,7 @@ Cosmographia "${{DIR}}/{os.path.basename(require_json_path)}" -u "cosmo:JUICE?se
                   timestamp.second / (24.0 * 60 * 60)])
         return jd
 
-    @staticmethod
-    def _find_first_start_time(observations: OrderedDict) -> datetime:
+    def _find_first_start_time(self, observations: OrderedDict) -> datetime:
         """ Finds the earliest start time of an observation.
 
         :param observations: Observation dictionary
@@ -354,10 +376,9 @@ Cosmographia "${{DIR}}/{os.path.basename(require_json_path)}" -u "cosmo:JUICE?se
             return min(times, key=lambda s: calendar.timegm(s.utctimetuple()))
         except ValueError:
             traceback.print_exc()
-            return datetime.now()
+            return self.timeline_fallback_bounds[0]
 
-    @staticmethod
-    def _find_last_end_time(observations: OrderedDict) -> datetime:
+    def _find_last_end_time(self, observations: OrderedDict) -> datetime:
         """ Finds the latest end time of an observation.
 
         :param observations: Observation dictionary
@@ -372,7 +393,7 @@ Cosmographia "${{DIR}}/{os.path.basename(require_json_path)}" -u "cosmo:JUICE?se
             return max(times, key=lambda s: calendar.timegm(s.utctimetuple()))
         except ValueError:
             traceback.print_exc()
-            return datetime.now()
+            return self.timeline_fallback_bounds[1]
 
     @staticmethod
     def _ftime(time: datetime) -> str:
