@@ -126,7 +126,7 @@ class TimelineProcessor:
                 break
         for line in f:
             if line.startswith("End time (UTC):"):
-                time_string = line[18:38]
+                time_string = line[16:36]
                 end_time = datetime.strptime(time_string, "%d-%b-%Y_%H:%M:%S")
                 continue
         if start_time is None or end_time is None:
