@@ -163,6 +163,7 @@ class Mex2Ker:
 
         # if we had a space, we move the output ck into the desired location
         if " " in ck_path:
+            print(f'Current directory: {os.getcwd()}')
             print('Moving file "{}" to "{}"'.format(output_ck_path, ck_path))
             shutil.move(output_ck_path, ck_path)
         os.chdir(original_cwd)

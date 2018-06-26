@@ -203,15 +203,19 @@ class TimelineProcessor:
 
     def _generate_solar_panel_kernel(self, observations, metakernel_file_path, ck_file_path,
                                      output_folder_path, custom_start_time,
-                                     extra_time_hours: float = 24, step_size_s: float = 20):
+                                     extra_time_hours: float = None, step_size_s: float = None):
+        if extra_time_hours is None:
+            extra_time_hours = self.juice_config.get_solar_panel_ck_span_days() * 24.0 / 2
+        if step_size_s is None:
+            step_size_s = self.juice_config.get_solar_panel_ck_sampling_seconds()
         spp = SolarPanelProcessor("JUICE")
         spy.furnsh(metakernel_file_path)
         spy.furnsh(ck_file_path)
 
         td = timedelta(hours=extra_time_hours)
         if custom_start_time is not None and len(observations)==0:
-            start_time = custom_start_time + td
-            end_time = custom_start_time - td
+            start_time = custom_start_time - td
+            end_time = custom_start_time + td
         else:
             start_time = self._find_first_start_time(observations) - td
             end_time = self._find_last_end_time(observations) + td

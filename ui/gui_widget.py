@@ -123,7 +123,7 @@ class MappsConverter(QWidget):
     def browse_scenario(self) -> None:
         last_selection = os.path.dirname(self.juice_config.get_last_scenario_folder())
         f = QFileDialog.getOpenFileName(self, "Open SPICE Metakernel", last_selection,
-                                        "Metakernel files (*.mk);;All files (*)")
+                                        "Metakernel files (*.mk, *.tm);;All files (*)")
         if f:
             file_name = str(f[0])
             self.juice_config.set_last_scenario_folder(file_name)

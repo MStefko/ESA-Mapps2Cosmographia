@@ -210,4 +210,8 @@ class Config:
     def get_instruments(self) -> List[str]:
         return self.static.get_instruments()
 
+    def get_solar_panel_ck_sampling_seconds(self) -> int:
+        return int(self.static.get_property("solar_panels", "panel_ck_sampling_seconds"))
 
+    def get_solar_panel_ck_span_days(self) -> int:
+        return int(self.static.get_property("solar_panels", "panel_ck_span_days"))

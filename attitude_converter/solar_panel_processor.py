@@ -4,7 +4,7 @@ from datetime import datetime
 
 import spiceypy as spy
 from spiceypy.utils.support_types import SpiceyError
-import numpy as np
+from math import sqrt
 from .attitude_provider import MappsTimedQuaternion, PanelMex2Ker
 
 
@@ -19,7 +19,7 @@ class SolarPanelProcessor:
         return self._probe
 
     @staticmethod
-    def _create_quaternion(direction: np.ndarray, up: np.ndarray) -> Tuple[float, float, float, float]:
+    def _create_quaternion(direction, up) -> Tuple[float, float, float, float]:
         """ Generates a quaternion described by a direction vector and "upwards" orientation vector.
 
         https://stackoverflow.com/questions/32208838/rotation-matrix-to-quaternion-equivalence
@@ -31,13 +31,13 @@ class SolarPanelProcessor:
         direction = direction / spy.vnorm(direction)
         up = up / spy.vnorm(up)
 
-        x = np.cross(up, direction)
+        x = spy.vcrss(up, direction)
         x = x / spy.vnorm(x)
-        y = np.cross(direction, x)
+        y = spy.vcrss(direction, x)
         y = y / spy.vnorm(y)
         z = direction
 
-        r = np.sqrt(1.0 + x[0] + y[1] + z[2]) * 0.5
+        r = sqrt(1.0 + x[0] + y[1] + z[2]) * 0.5
         i = (y[2] - z[1]) / (4 * r)
         j = (z[0] - x[2]) / (4 * r)
         k = (x[1] - y[0]) / (4 * r)
@@ -45,12 +45,12 @@ class SolarPanelProcessor:
         return r, i, j, k
 
     @staticmethod
-    def _find_new_XY_directions(static_Y_vector: np.ndarray, sun_vector: np.ndarray):
+    def _find_new_XY_directions(static_Y_vector, sun_vector):
         nY = static_Y_vector / spy.vnorm(static_Y_vector)
         nS = sun_vector / spy.vnorm(sun_vector)
 
-        new_Z = nS - (np.dot(nS, nY)) * nY
-        new_X = - np.cross(nY, new_Z)
+        new_Z = nS - (spy.vdot(nS, nY)) * nY
+        new_X = - spy.vcrss(nY, new_Z)
 
         return new_X, nY
 
@@ -63,7 +63,7 @@ class SolarPanelProcessor:
         :return: List of MappsTimedQuaternions for the given period.
         """
         quaternions = []
-        ets = np.arange(et_start, et_end, step_s)
+        ets = range(int(et_start), int(et_end), step_s)
         n = len(ets)
         counter_pct = 0
         for i, et in enumerate(ets):
